@@ -1,4 +1,4 @@
-package com.muses;
+package com.muses.avancier;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
