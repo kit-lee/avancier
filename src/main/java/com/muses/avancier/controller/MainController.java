@@ -79,4 +79,18 @@ public class MainController {
 		}
 		
 	}
+	
+	@RequestMapping(value = "/user/all", params="method=delete")
+	public byte[] deleteAllTransUser(){
+		
+		try{
+			service.deleteAll();
+		
+			return "true".getBytes();
+		}catch(Exception ex){
+			logger.error("删除所有用户数据时异常!", ex);
+			return "false".getBytes();
+		}
+		
+	}
 }

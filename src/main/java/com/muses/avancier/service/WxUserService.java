@@ -47,4 +47,9 @@ public class WxUserService {
 	public List<WxUser> listAll(){
 		return repository.findAll();
 	}
+	
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void deleteAll(){
+		repository.deleteAll();
+	}
 }
