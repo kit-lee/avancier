@@ -52,4 +52,10 @@ public class WxUserService {
 	public void deleteAll(){
 		repository.deleteAll();
 	}
+	
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void deleteByOpenId(String openId){
+		WxUser u = repository.findByOpenId(openId);
+		repository.delete(u);
+	}
 }

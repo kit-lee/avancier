@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,6 +86,20 @@ public class MainController {
 		
 		try{
 			service.deleteAll();
+		
+			return "true".getBytes();
+		}catch(Exception ex){
+			logger.error("删除所有用户数据时异常!", ex);
+			return "false".getBytes();
+		}
+		
+	}
+	
+	@RequestMapping(value = "/user/{openId}", params="method=delete")
+	public byte[] deleteUser(@PathVariable String openId){
+		
+		try{
+			service.deleteByOpenId(openId);
 		
 			return "true".getBytes();
 		}catch(Exception ex){
