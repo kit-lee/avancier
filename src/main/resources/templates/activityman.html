@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="妙思科技Web应用管理后台">
+<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
+
+<title>妙思应用管理后台</title>
+<link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
+
+<!-- Google icon -->
+<link href="" rel="stylesheet" data-th-href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" />
+
+<!-- Bootstrap css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/bootstrap.min.css}" />
+<!-- Propeller css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/propeller.min.css}" />
+
+<!-- Propeller date time picker css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/bootstrap-datetimepicker.css}" />
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/pmd-datetimepicker.css}" />
+
+<!-- Propeller theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-theme.css}" />
+
+<!-- Propeller admin theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-admin.css}" />
+</head>
+
+<!-- Styles Ends -->
+
+<body>
+<!-- Header Starts -->
+<!--Start Nav bar -->
+<nav class="navbar navbar-inverse navbar-fixed-top pmd-navbar pmd-z-depth">
+
+	<div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<a href="javascript:void(0);" class="btn btn-sm pmd-btn-fab pmd-btn-flat pmd-ripple-effect pull-left margin-r8 pmd-sidebar-toggle"><i class="material-icons">menu</i></a>	
+		  <a href="/" class="navbar-brand">
+		  	妙思科技应用管理后台
+		  </a>
+		</div>
+	</div>
+
+</nav><!--End Nav bar -->
+<!-- Header Ends -->
+
+<!-- Sidebar Starts -->
+<div class="pmd-sidebar-overlay"></div>
+
+<!-- Left sidebar -->
+<aside class="pmd-sidebar sidebar-default pmd-sidebar-slide-push pmd-sidebar-left pmd-sidebar-open bg-fill-darkblue sidebar-with-icons" role="navigation">
+	<ul class="nav pmd-sidebar-nav">
+		
+		<!-- User info -->
+		<li class="dropdown pmd-dropdown pmd-user-info visible-xs visible-md visible-sm visible-lg">
+			<a aria-expanded="false" data-toggle="dropdown" class="btn-user dropdown-toggle media" data-sidebar="true" aria-expandedhref="javascript:void(0);">
+				<div class="media-left">
+					<img src="" data-th-src="@{/themes/images/user-icon.png}" alt="New User">
+				</div>
+				<div class="media-body media-middle">系统管理员</div>
+				<div class="media-right media-middle"><i class="dic-more-vert dic"></i></div>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a href="" data-th-href="@{/logout}">登出</a></li>
+			</ul>
+		</li><!-- End user info -->
+		
+		<li> 
+			<a class="pmd-ripple-effect" href="" data-th-href="@{/activities}">	
+			    <i class="material-icons media-left pmd-sm">local_activity</i>
+				<span class="media-body">活动管理</span>
+			</a> 
+		</li>
+	</ul>
+</aside><!-- End Left sidebar -->
+<!-- Sidebar Ends -->  
+	
+<!--content area start-->
+<div id="content" class="pmd-content inner-page">
+
+	<div class="container-fluid full-width-container data-tables">
+		<!-- Title -->
+        <h1 class="section-title" id="services">
+            <span>活动管理</span>
+        </h1><!-- End Title -->
+        
+        <!--breadcrum start-->
+        <ol class="breadcrumb text-left">
+          <li><a href="" data-th-href="@{/}">首页</a></li>
+          <li class="active">活动管理</li>
+        </ol><!--breadcrum end-->
+        
+        <!-- table card -->
+        <section class="row component-section">
+            <!-- table card code and example -->
+            <div class="col-md-12">
+                <div class="component-box">
+                    <!-- table card example -->
+                    <div  class="pmd-card pmd-z-depth pmd-card-custom-view">
+                        <div class="table-responsive">
+                            <div class="activity-table-toolbar">
+                                <button id="activity-btn-addNew" type="button" class="btn pmd-ripple-effect btn-primary"> 添加活动 </button >
+                            </div>
+                            <table id="example-checkbox" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
+		                        <thead>
+		                            <tr>
+		                                <th></th>
+		                                <th>序号</th>
+		                                <th>活动名称</th>
+		                                <th>开始时间</th>
+		                                <th>结束时间</th>
+		                                <th>需审核上墙</th>
+		                            </tr>
+		                        </thead>
+		                        <tbody>
+		                            <tr>
+		                                <td></td>
+		                                <td>Tiger</td>
+		                                <td>Nixon</td>
+		                                <td>System Architect</td>
+		                                <td>Edinburgh</td>
+		                                <td>61</td>
+		                            </tr>
+		                        </tbody>
+		                    </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div><!--end content area-->
+
+<!-- Footer Starts -->
+<!--footer start-->
+<footer class="admin-footer">
+ <div class="container-fluid">
+ 	<ul class="list-unstyled list-inline">
+	 	<li>
+			<span class="pmd-card-subtitle-text"><a href="http://muses.cc/" target="_blank">Muses.cc</a> &copy; 2017. All Rights Reserved.</span>
+        </li>
+        <li class="pull-right for-support">
+			<a href="mailto:im@muses.cc">
+          		<div>
+					<svg x="0px" y="0px" width="38px" height="38px" viewBox="0 0 38 38" enable-background="new 0 0 38 38">
+<g><path fill="#A5A4A4" d="M25.621,21.085c-0.642-0.682-1.483-0.682-2.165,0c-0.521,0.521-1.003,1.002-1.524,1.523
+		c-0.16,0.16-0.24,0.16-0.44,0.08c-0.321-0.2-0.683-0.32-1.003-0.521c-1.483-0.922-2.726-2.125-3.809-3.488
+		c-0.521-0.681-1.002-1.402-1.363-2.205c-0.04-0.16-0.04-0.24,0.08-0.4c0.521-0.481,1.002-1.003,1.524-1.483
+		c0.721-0.722,0.721-1.524,0-2.246c-0.441-0.44-0.842-0.842-1.203-1.202c-0.441-0.441-0.842-0.842-1.243-1.243
+		c-0.642-0.642-1.483-0.642-2.165,0c-0.521,0.521-1.002,1.002-1.524,1.523c-0.481,0.481-0.722,1.043-0.802,1.685
+		c-0.08,1.042,0.16,2.085,0.521,3.047c0.762,2.085,1.925,3.849,3.328,5.532c1.884,2.286,4.17,4.05,6.815,5.333
+		c1.203,0.562,2.406,1.002,3.729,1.123c0.922,0.04,1.724-0.201,2.365-0.923c0.441-0.521,0.923-0.922,1.403-1.403
+		c0.682-0.722,0.682-1.563,0-2.245C27.265,22.729,26.423,21.927,25.621,21.085z"/>
+	<path fill="#A5A4A4" d="M32.437,5.568C28.869,2,24.098-0.005,19.005-0.005S9.182,2,5.573,5.568C2.005,9.177,0,13.908,0,19
+		s1.965,9.823,5.573,13.432c3.568,3.568,8.34,5.573,13.432,5.573s9.823-1.965,13.431-5.573
+		C39.854,25.014,39.854,12.985,32.437,5.568z M30.299,30.294c-3.003,3.045-7.021,4.695-11.293,4.695
+		c-4.272,0-8.291-1.65-11.294-4.695C4.666,27.29,3.016,23.271,3.016,19c0-4.272,1.649-8.291,4.695-11.294
+		c3.003-3.003,7.022-4.695,11.294-4.695c4.272,0,8.291,1.649,11.293,4.695C36.56,13.924,36.56,24.075,30.299,30.294z"/>
+</g></svg>
+            	</div>
+            	<div>
+				  <span class="pmd-card-subtitle-text">寻求帮助</span>
+				  <h3 class="pmd-card-title-text">im@muses.cc</h3>
+				</div>
+            </a>
+        </li>
+    </ul>
+ </div>
+</footer>
+<!--footer end-->
+<!-- Footer Ends -->
+
+<!-- Modals start -->
+	<div tabindex="-1" class="modal fade" id="form-dialog" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bordered">
+					<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+					<h2 class="pmd-card-title-text">添加 | 修改活动</h2>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="first-name">活动名称</label> <input type="text" class="mat-input form-control" id="activity-form-name" name="name" value=""> <!-- <span class="help-text">活动名称必填</span> -->
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="first-name">开始时间</label> <input type="text" class="mat-input form-control" id="email" value="">
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="first-name">结束时间</label> <input type="text" class="mat-input form-control" id="mobil" value="">
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label class="control-label">是否需审核上墙</label>
+							<textarea required class="form-control"></textarea>
+						</div>
+						<label
+							class="checkbox-inline pmd-checkbox pmd-checkbox-ripple-effect">
+							<input type="checkbox" value=""> <span class="pmd-checkbox"> Accept Terms and conditions</span>
+						</label>
+					</form>
+				</div>
+				<div class="pmd-modal-action">
+					<button data-dismiss="modal" class="btn pmd-ripple-effect btn-primary" type="button">保存</button>
+					<button data-dismiss="modal" class="btn pmd-ripple-effect btn-default" type="button">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modals Ends -->
+
+<!-- Scripts Starts -->
+<script src="" data-th-src="@{/assets/js/jquery-1.12.2.min.js}"></script>
+<script src="" data-th-src="@{/assets/js/bootstrap.min.js}"></script>
+<script>
+	$(document).ready(
+			function() {
+				var sPath = window.location.pathname;
+				var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
+				$(".pmd-sidebar-nav").each(
+						function() {
+							$(this).find("a[href='" + sPage + "']").parents(
+									".dropdown").addClass("open");
+							$(this).find("a[href='" + sPage + "']").parents(
+									".dropdown").find('.dropdown-menu').css(
+									"display", "block");
+							$(this).find("a[href='" + sPage + "']").parents(
+									".dropdown").find('a.dropdown-toggle')
+									.addClass("active");
+							$(this).find("a[href='" + sPage + "']").addClass(
+									"active");
+						});
+			});
+</script>
+<script type="text/javascript">
+	(function() {
+		"use strict";
+		var toggles = document.querySelectorAll(".c-hamburger");
+		for (var i = toggles.length - 1; i >= 0; i--) {
+			var toggle = toggles[i];
+			toggleHandler(toggle);
+		}
+		;
+		function toggleHandler(toggle) {
+			toggle
+					.addEventListener(
+							"click",
+							function(e) {
+								e.preventDefault();
+								(this.classList.contains("is-active") === true) ? this.classList
+										.remove("is-active")
+										: this.classList.add("is-active");
+							});
+		}
+	})();
+</script>
+
+<script src="" data-th-src="@{/assets/js/propeller.min.js}"></script> 
+<script>
+	//custom page script
+	$(document).ready(function() {
+		//添加活动
+		$('#activity-btn-addNew').click(function() {
+
+		})
+	})
+</script>
+</body>
+</html>
