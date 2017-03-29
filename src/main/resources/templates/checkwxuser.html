@@ -6,7 +6,7 @@
 <meta name="description" content="妙思科技Web应用管理后台">
 <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
 
-<title>活动管理 - 妙思科技应用管理后台</title>
+<title>待审核清单 - 妙思科技应用管理后台</title>
 <link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
 
 <!-- Google icon -->
@@ -16,10 +16,6 @@
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/bootstrap.min.css}" />
 <!-- Propeller css -->
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/propeller.min.css}" />
-
-<!-- Propeller date time picker css-->
-<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/bootstrap-datetimepicker.css}" />
-<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/pmd-datetimepicker.css}" />
 
 <!-- DataTables css-->
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css}">
@@ -58,33 +54,34 @@
 	<div class="container-fluid full-width-container data-tables">
 		<!-- Title -->
         <h1 class="section-title" id="services">
-            <span>活动管理</span>
+            <span>待审核清单</span>
         </h1><!-- End Title -->
         
         <!--breadcrum start-->
         <ol class="breadcrumb text-left">
           <li><a href="" data-th-href="@{/}">首页</a></li>
-          <li class="active">活动管理</li>
+          <li class="active">待审核清单</li>
         </ol><!--breadcrum end-->
         
         <!-- table card -->
         <section class="row component-section">
+            <input type="hidden" id="checkwxuser-csrf" name="_csrf" value=""  data-th-value="${_csrf.token}" />
             <!-- table card code and example -->
             <div class="col-md-12">
                 <div class="component-box">
                     <!-- table card example -->
                     <div  class="pmd-card pmd-z-depth pmd-card-custom-view">
                         <div class="table-responsive">
-                            <table id="activity-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
+                            <table id="checkwxuser-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
 		                        <thead>
 		                            <tr>
 		                                <th></th>
 		                                <th></th>
-		                                <th>序号</th>
-		                                <th>活动名称</th>
-		                                <th>开始时间</th>
-		                                <th>结束时间</th>
-		                                <th>需审核上墙</th>
+		                                <th>活动</th>
+		                                <th>微信用户</th>
+		                                <th>头像</th>
+		                                <th>签到时间</th>
+		                                <th>留言</th>
 		                            </tr>
 		                        </thead>
 		                    </table>
@@ -104,45 +101,6 @@
 <!--footer end-->
 <!-- Footer Ends -->
 
-<!-- Modals start -->
-	<div tabindex="-1" class="modal fade" id="activity-dialog-edit" style="display: none;" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header bordered">
-					<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-					<h2 class="pmd-card-title-text">添加 | 修改活动</h2>
-				</div>
-				<div class="modal-body">
-					<form id="activity-form" class="form-horizontal">
-					    <input type="hidden" id="activity-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
-					    <input type="hidden" id="activity-form-id" name="id" value="">
-						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name" class="control-label">活动名称</label>
-							<input type="text" class="mat-input form-control" id="activity-form-name" name="name" value="">
-							<span class="help-block"></span>
-						</div>
-						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name">开始时间</label> <input type="text" class="mat-input form-control" id="activity-form-start" name="start" value="">
-						</div>
-						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name">结束时间</label> <input type="text" class="mat-input form-control" id="activity-form-end" name="end" value="">
-						</div>
-						<label
-							class="checkbox-inline pmd-checkbox pmd-checkbox-ripple-effect">
-							<input type="checkbox" id="activity-form-needAudit" name="needAudit" value="1"> <span class="pmd-checkbox"> 资料需通过审核</span>
-						</label>
-					</form>
-				</div>
-				<div class="pmd-modal-action">
-					<button id="activity-form-submit" class="btn pmd-ripple-effect btn-primary" type="button">保存</button>
-					<button data-dismiss="modal" class="btn pmd-ripple-effect btn-default" type="button">取消</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modals Ends -->
-
 <!-- Scripts Starts -->
 <script src="" data-th-src="@{/assets/js/jquery-1.12.2.min.js}"></script>
 <script src="" data-th-src="@{/assets/js/bootstrap.min.js}"></script>
@@ -151,7 +109,9 @@
 	$(document).ready(
 			function() {
 				var sPath = window.location.pathname;
-				var sPage = sPath;//sPath.substring(sPath.lastIndexOf('/') + 1);
+				var params = window.location.search;
+				var sPage = sPath+(params.length>0 ? params : '');
+				console.debug(sPage);
 				$(".pmd-sidebar-nav").each(
 						function() {
 							$(this).find("a[href='" + sPage + "']").parents(".dropdown").addClass("open");
@@ -162,10 +122,6 @@
 			});
 	
 </script>
-
-<!-- Javascript for Datepicker -->
-<script type="text/javascript" language="javascript" src="" data-th-src="@{/components/datetimepicker/js/moment-with-locales.js}"></script>
-<script type="text/javascript" language="javascript" src="" data-th-src="@{/components/datetimepicker/js/bootstrap-datetimepicker.js}"></script>
 
 <!-- Datatable js -->
 <script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js}"></script>
@@ -182,7 +138,7 @@
 var table;
 $(document).ready(function(){
 	//数据表格初始化
-	table = $('#activity-table').DataTable({
+	table = $('#checkwxuser-table').DataTable({
         responsive: false,
         columnDefs: [ {
             orderable: false,
@@ -192,33 +148,29 @@ $(document).ready(function(){
             targets:1,
             visible: false
         },{
-        	targets:3,
+        	targets:4,
         	render: function ( data, type, full, meta ) {
-        	      return '<a href="javascript:editRows('+full[1]+')">'+data+'</a>';
+        	      return '<img src="'+data+'" style="width:60px" />';
         	}
         } ],
         select: {
             style: 'multi',
             selector: 'td:first-child'
         },
-        //order: [ 1, 'asc' ],
-        bFilter: true,
         bLengthChange: true,
         processing: true,
         serverSide: true,
-        ajax: './activities/json',
+        ajax: './wxrecord/json?checked=0',
         pagingType: "simple",
-        "paging": true,
-        "searching": true,
-        "language": {
+        paging: true,
+        searching: false,
+        language: {
         	"sProcessing":"处理中...",
         	"sLoadingRecords": "载入中...",
-        	"sZeroRecords":  "没有匹配结果",
-        	"emptyTable":"未有任何活动",
+        	"sZeroRecords":  "没有匹配的结果",
+        	"emptyTable":"未有任何待审记录",
         	"sInfo":"显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
             "sLengthMenu": "<span class='custom-select-title'>每页显示:</span> <span class='custom-select'> _MENU_ </span> 项记录",
-            "sSearch": "",
-            "sSearchPlaceholder": "活动名查找",
             "paginate": {
                 "sNext": " ",
                 "sPrevious": " "
@@ -231,12 +183,13 @@ $(document).ready(function(){
     });
     
     //表格顶部菜单栏
-    $("div.data-table-title").html('<button id="activity-btn-addNew" type="button" class="btn pmd-ripple-effect btn-primary"> 添加活动 </button > <button id="activity-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除活动 </button >');
+    $("div.data-table-title").html('<button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
+    		' <button id="checkwxuser-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除签到 </button >'+
+    		' <button id="checkwxuser-btn-blacklist" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >');
     
     //删除选中
-    $('#activity-btn-delete').click( function () {
+    $('#checkwxuser-btn-delete').click( function () {
     	var data = table.rows('.selected').data();
-    	console.log(data);
     	var ids = '';
     	for(var i=0;i<data.length;i++){
     		var d = data[i];
@@ -245,9 +198,9 @@ $(document).ready(function(){
     		else
     			ids+=d[1];
     	}
-    	console.log(d);
+
     	$.ajax({
-    		url:'./activities/'+ids+'?_csrf='+$('#activity-form-csrf').val(),
+    		url:'./wxrecord/'+ids+'?_csrf='+$('#checkwxuser-csrf').val(),
     		type:'DELETE',
     		dataType:'text',
     		success:function(t){
@@ -258,72 +211,30 @@ $(document).ready(function(){
     	})
     } );
     //添加活动按钮事件
-    $('#activity-btn-addNew').click(function() {
-    	$('#activity-form-id').val('');
-    	$('#activity-form-name').val('');
-    	$('#activity-form-start').val('');
-    	$('#activity-form-end').val('');
-    	$('#activity-form-needAudit').prop('checked', false);
-        $('#activity-dialog-edit').modal('show');
-    });
-    //日期控件初始化
-    $('#activity-form-start').datetimepicker({
-        format : 'YYYY-MM-DD',
-        showClear : true,
-        collapse : false,
-        locale : 'zh-cn'
-    });
-    //日期控件初始化
-    $('#activity-form-end').datetimepicker({
-        format : 'YYYY-MM-DD',
-        showClear : true,
-        collapse : false,
-        locale : 'zh-cn'
-    });
-    
-    //提交内容
-    $('#activity-form-submit').click(function(){
-    	if($('#activity-form-name').val()==''){
-    		$('#activity-form-name').parent('.form-group').addClass('has-error');
-    		$('#activity-form-name').siblings('.help-block').html('活动名称必须填写');
-    		return;
-    	}
-    	var data = $('#activity-form').serialize();
-    	$.ajax({
-    		url:'./activities?'+data,
-    		type:'PUT',
-    		dataType:'text',
-    		success:function(t){
-    			if(t=='true'){
-    				table.draw();
-    			}
-    			$('#activity-dialog-edit').modal('hide');
-    		}
-    	})
+    $('#checkwxuser-btn-check').click(function() {
+    	var data = table.rows('.selected').data();
+        var ids = '';
+        for(var i=0;i<data.length;i++){
+            var d = data[i];
+            if(ids!=='')
+                  ids+=','+d[1];
+            else
+                ids+=d[1];
+        }
+
+        $.ajax({
+            url:'./wxrecord/'+ids+'?checked=1&_csrf='+$('#checkwxuser-csrf').val(),
+            type:'PUT',
+            dataType:'text',
+            success:function(t){
+                if(t=='true'){
+                    table.draw();
+                }
+            }
+        })
     });
 
 })
-
-function editRows(id){
-    var data = table.rows().data();
-    for(var i=0;i<data.length;i++){
-    	if(id==data[i][1]){
-    		$('#activity-form-id').val(id);
-    		$('#activity-form-name').val(data[i][3]);
-    		
-            $('#activity-form-start').val(data[i][4]);
-            $('#activity-form-end').val(data[i][5]);
-            if(data[i][6]=='')
-                $('#activity-form-needAudit').prop('checked', false);
-            else
-            	$('#activity-form-needAudit').prop('checked', true);
-            
-            $('#activity-form .form-group').addClass('pmd-textfield-floating-label-completed');
-            $('#activity-dialog-edit').modal('show');
-    		break;
-    	}
-    }
-}
 </script>
 </body>
 </html>

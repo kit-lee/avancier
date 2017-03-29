@@ -6,7 +6,7 @@
 <meta name="description" content="妙思科技Web应用管理后台">
 <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
 
-<title>妙思应用管理后台</title>
+<title>首页 - 妙思科技应用管理后台</title>
 <link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
 
 <!-- Google icon -->
@@ -16,10 +16,6 @@
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/bootstrap.min.css}" />
 <!-- Propeller css -->
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/propeller.min.css}" />
-
-<!-- Propeller date time picker css-->
-<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/bootstrap-datetimepicker.css}" />
-<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/pmd-datetimepicker.css}" />
 
 <!-- Propeller theme css-->
 <link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-theme.css}" />
@@ -33,13 +29,13 @@
 <body>
 <!-- Header Starts -->
 <!--Start Nav bar -->
-<nav class="navbar navbar-inverse navbar-fixed-top pmd-navbar pmd-z-depth">
+<nav class="navbar navbar-inverse navbar-fixed-top pmd-navbar pmd-z-depth" data-th-fragment="navbar">
 
 	<div class="container-fluid">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
 			<a href="javascript:void(0);" class="btn btn-sm pmd-btn-fab pmd-btn-flat pmd-ripple-effect pull-left margin-r8 pmd-sidebar-toggle"><i class="material-icons">menu</i></a>	
-		  <a href="/" class="navbar-brand">
+		  <a href="/" class="navbar-brand" data-th-href="@{/}">
 		  	妙思科技应用管理后台
 		  </a>
 		</div>
@@ -52,7 +48,7 @@
 <div class="pmd-sidebar-overlay"></div>
 
 <!-- Left sidebar -->
-<aside class="pmd-sidebar sidebar-default pmd-sidebar-slide-push pmd-sidebar-left pmd-sidebar-open bg-fill-darkblue sidebar-with-icons" role="navigation">
+<aside class="pmd-sidebar sidebar-default pmd-sidebar-slide-push pmd-sidebar-left pmd-sidebar-open bg-fill-darkblue sidebar-with-icons" role="navigation" data-th-fragment="sidebar">
 	<ul class="nav pmd-sidebar-nav">
 		
 		<!-- User info -->
@@ -75,6 +71,12 @@
 				<span class="media-body">活动管理</span>
 			</a> 
 		</li>
+		<li> 
+            <a class="pmd-ripple-effect" href="" data-th-href="@{/wxrecord?checked=0}"> 
+                <i class="material-icons media-left pmd-sm">playlist_add_check</i>
+                <span class="media-body">待审核清单</span>
+            </a> 
+        </li>
 	</ul>
 </aside><!-- End Left sidebar -->
 <!-- Sidebar Ends -->  
@@ -92,7 +94,7 @@
 
 <!-- Footer Starts -->
 <!--footer start-->
-<footer class="admin-footer">
+<footer class="admin-footer" data-th-fragment="footer">
  <div class="container-fluid">
  	<ul class="list-unstyled list-inline">
 	 	<li>
