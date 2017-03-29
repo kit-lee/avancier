@@ -17,17 +17,35 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.muses.avancier.model.WxUser;
 import com.muses.avancier.service.WxUserService;
 
+/**
+ * 前端程序调用的REST API
+ * @author kit@muses.cc
+ *
+ */
 @RestController
 @RequestMapping("/api")
-public class MainController {
+public class ApiController {
 	
-	private static final Log logger = LogFactory.getLog(MainController.class);
+	private static final Log logger = LogFactory.getLog(ApiController.class);
 	
 	@Autowired
 	private WxUserService service;
 
+	/**
+	 * 添加签到用户
+	 * @param openId
+	 *         微信openId
+	 * @param headpic
+	 *         头像地址
+	 * @param nickName
+	 *         昵称
+	 * @param message
+	 *         留言
+	 * @return
+	 */
 	@RequestMapping(value = "/user", method=RequestMethod.POST)
-	public byte[] addUser(@RequestParam String openId, @RequestParam String headpic){
+	public byte[] addUser(@RequestParam String openId, @RequestParam String headpic, 
+	        @RequestParam String nickName, @RequestParam String message){
 		
 		if(!headpic.startsWith("http://")){
 			logger.info("headpic参数格式不符！"+headpic);
