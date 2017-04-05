@@ -1,6 +1,9 @@
 package com.muses.avancier.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,8 +25,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.WriterException;
 import com.muses.avancier.model.Activity;
 import com.muses.avancier.service.ActivityService;
+import com.muses.avancier.type.ActivityType;
+import com.muses.avancier.util.QRCodeUtil;
 import com.muses.common.util.DateUtil;
 
 /**
@@ -39,6 +45,9 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+    
+    @Autowired
+    private QRCodeUtil qrCodeUtil;
 
     /**
      * 活动管理列表页面
@@ -46,8 +55,10 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/activities", method = RequestMethod.GET)
-    public ModelAndView activities() {
-        return new ModelAndView("activityman");
+    public ModelAndView activities(HttpServletRequest request) {
+        String baseUrl = request.getScheme()+"://"+request.getServerName()+
+                (request.getServerPort()!=80?":"+request.getServerPort():"");
+        return new ModelAndView("activityman").addObject("baseUrl", baseUrl);
     }
 
     /**
@@ -81,16 +92,17 @@ public class ActivityController {
         JSONArray data = new JSONArray();
         for (int i = 0; i < activities.getContent().size(); i++) {
             Activity activity = activities.getContent().get(i);
-            String[] arr = new String[7];
+            String[] arr = new String[8];
             arr[0] = "";
-            arr[1] = String.valueOf(activity.getId());
-            arr[2] = String.valueOf(length * page + i + 1);
-            arr[3] = activity.getName();
-            arr[4] = activity.getStart() != null ? DateUtil.DateToString(
+            arr[1] = String.valueOf(length * page + i + 1);
+            arr[2] = activity.getName();
+            arr[3] = activity.getStart() != null ? DateUtil.DateToString(
                     activity.getStart(), "yyyy-MM-dd") : "";
-            arr[5] = activity.getEnd() != null ? DateUtil.DateToString(
+            arr[4] = activity.getEnd() != null ? DateUtil.DateToString(
                     activity.getEnd(), "yyyy-MM-dd") : "";
-            arr[6] = activity.isNeedAudit() ? "是" : "";
+            arr[5] = activity.isNeedAudit() ? "是" : "";
+            arr[6] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
+            arr[7] = String.valueOf(activity.getId());
 
             data.add(arr);
         }
@@ -113,7 +125,7 @@ public class ActivityController {
 
     @RequestMapping(value = "/activities/{ids}", method = RequestMethod.DELETE)
     @ResponseBody
-    public byte[] saveOrUpdateActivity(@PathVariable Long[] ids) {
+    public byte[] deleteActivity(@PathVariable Long[] ids) {
         try {
             activityService.deleteActivity(ids);
         } catch (Exception ex) {
@@ -121,5 +133,22 @@ public class ActivityController {
             return "false".getBytes();
         }
         return "true".getBytes();
+    }
+    
+    @RequestMapping(value="/activities/{id}/qrcode", method=RequestMethod.GET)
+    public void frontendLinkQrCode(@PathVariable long id, HttpServletRequest request, HttpServletResponse rep){
+        rep.setHeader("Cache-Control", "no-store");
+        rep.setHeader("Pragma", "no-cache");
+        rep.setDateHeader("Expires", 0);
+        
+        String baseUrl = request.getScheme()+"://"+request.getServerName()+(request.getServerPort()!=80?":"+request.getServerPort():"");
+        String frontendUrl = baseUrl+(request.getContextPath().equals("/")?"":request.getContextPath())+"/frontend?activityId="+id;
+        
+        try {
+            qrCodeUtil.getQRCodeImage(frontendUrl, "gif", rep.getOutputStream());
+        } catch (WriterException | IOException e ) {
+            log.error(e.getMessage(), e);
+            rep.setStatus(500);
+        }
     }
 }

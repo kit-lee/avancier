@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<body>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        var strURL = document.URL;
+        var add1   = strURL.indexOf("="),add2   = strURL.indexOf("&");
+        var openID = strURL.substring(add1+1,add2);
+        var abb1 = strURL.lastIndexOf("=");
+        var refreshToken =strURL.substr(abb1+1,strURL.length+1);
+        localStorage.RefreshToken = refreshToken;
+        localStorage.open_ID = openID;
+        $.ajax({
+            url: "http://weixin.91zmt.com/wxapi/sns/userinfo?appId="+config.app_id2+"&open_id=" + localStorage.open_ID + "&refresh_token=" + localStorage.RefreshToken + "",
+            type: "GET",
+            dataType: "JSON",
+            success : function (datas){
+                var data = datas.data;
+                console.log(data);
+//                alert("名字"+data.nickname);
+                var username = data.openid; //用户唯一标识
+                localStorage.setItem('useropenid',data.openid);
+                var headurl = data.headimgurl; //用户头像ID
+                postuser(username,headurl);
+            },
+            error: function(e){alert("调试中..");}
+        });
+        function  postuser(username,headurl){
+            $.ajax({
+                url : 'http://91zmt.com:8081/api/user',
+                type:'POST',
+                dataType:"JSON",
+                data:{
+                    openId:username,
+                    headpic:headurl
+                },
+                success:function(data){
+                    console.log(data);
+                    window.location.href = config.mapUrl;
+                },
+                error:function(data){
+                    console.log(data)
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

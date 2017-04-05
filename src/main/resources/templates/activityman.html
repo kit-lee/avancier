@@ -79,12 +79,13 @@
 		                        <thead>
 		                            <tr>
 		                                <th></th>
-		                                <th></th>
 		                                <th>序号</th>
 		                                <th>活动名称</th>
 		                                <th>开始时间</th>
 		                                <th>结束时间</th>
-		                                <th>需审核上墙</th>
+		                                <th>需审核</th>
+		                                <th>类型</th>
+		                                <th>二维码</th>
 		                            </tr>
 		                        </thead>
 		                    </table>
@@ -127,6 +128,13 @@
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
 							<label for="first-name">结束时间</label> <input type="text" class="mat-input form-control" id="activity-form-end" name="end" value="">
 						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">活动类型</label> 
+                            <select id="activity-form-type" class="form-control" name="type">
+                                <option value="checkin">签到</option>
+                                <option value="barrage">弹幕</option>
+                            </select>
+                        </div>
 						<label
 							class="checkbox-inline pmd-checkbox pmd-checkbox-ripple-effect">
 							<input type="checkbox" id="activity-form-needAudit" name="needAudit" value="1"> <span class="pmd-checkbox"> 资料需通过审核</span>
@@ -140,6 +148,17 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- Modal 二维码图片 -->
+	<div tabindex="-1" class="modal fade" id="activity-frontend-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" style="height:450px;">
+            <div class="modal-content">
+                <div class="pmd-modal-media"><img style="margin:0 auto;" id="activity-frontend-qrcode" class="img-responsive" src=""></div>
+                <div class="modal-body" id="activity-frontend-link"></div>
+            </div>
+        </div>
+    </div>
+	<!-- 二维码图片Modal End -->
 
 	<!-- Modals Ends -->
 
@@ -189,12 +208,14 @@ $(document).ready(function(){
             className: 'select-checkbox',
             targets:0,
         },{
-            targets:1,
-            visible: false
+            targets:7,
+            render: function ( data, type, full, meta ) {
+                return '<a href="javascript:showQrCode('+data+')">查看</a>';
+            }
         },{
-        	targets:3,
+        	targets:2,
         	render: function ( data, type, full, meta ) {
-        	      return '<a href="javascript:editRows('+full[1]+')">'+data+'</a>';
+        	      return '<a href="javascript:editRows('+full[7]+')">'+data+'</a>';
         	}
         } ],
         select: {
@@ -236,16 +257,15 @@ $(document).ready(function(){
     //删除选中
     $('#activity-btn-delete').click( function () {
     	var data = table.rows('.selected').data();
-    	console.log(data);
     	var ids = '';
     	for(var i=0;i<data.length;i++){
     		var d = data[i];
     		if(ids!=='')
-    			  ids+=','+d[1];
+    			  ids+=','+d[7];
     		else
-    			ids+=d[1];
+    			ids+=d[7];
     	}
-    	console.log(d);
+
     	$.ajax({
     		url:'./activities/'+ids+'?_csrf='+$('#activity-form-csrf').val(),
     		type:'DELETE',
@@ -303,26 +323,36 @@ $(document).ready(function(){
     });
 
 })
-
+//打开模态窗口，修改活动内容
 function editRows(id){
     var data = table.rows().data();
     for(var i=0;i<data.length;i++){
-    	if(id==data[i][1]){
+    	if(id==data[i][7]){
     		$('#activity-form-id').val(id);
-    		$('#activity-form-name').val(data[i][3]);
+    		$('#activity-form-name').val(data[i][2]);
     		
-            $('#activity-form-start').val(data[i][4]);
-            $('#activity-form-end').val(data[i][5]);
-            if(data[i][6]=='')
+            $('#activity-form-start').val(data[i][3]);
+            $('#activity-form-end').val(data[i][4]);
+            if(data[i][5]=='')
                 $('#activity-form-needAudit').prop('checked', false);
             else
             	$('#activity-form-needAudit').prop('checked', true);
+            if(data[i][6]=='签到')
+            	$('#activity-form-type').val('checkin');
+            else
+            	$('#activity-form-type').val('barrage');
             
             $('#activity-form .form-group').addClass('pmd-textfield-floating-label-completed');
             $('#activity-dialog-edit').modal('show');
     		break;
     	}
     }
+}
+//打开模态窗口，显示前端页面的二维码
+function showQrCode(id){
+	$('#activity-frontend-qrcode').attr('src', './activities/'+id+'/qrcode');
+	$('#activity-frontend-link').text('[[${baseUrl}+@{/frontend}]]?activityId='+id);
+	$('#activity-frontend-modal').modal('show');
 }
 </script>
 </body>

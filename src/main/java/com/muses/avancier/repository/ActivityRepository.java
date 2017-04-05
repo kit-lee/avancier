@@ -6,6 +6,11 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.muses.avancier.model.Activity;
 
+/**
+ * 活动信息仓库接口
+ * @author kit@muses.cc
+ *
+ */
 public interface ActivityRepository extends PagingAndSortingRepository<Activity, Long> {
     /**
      * 按名称模糊查找
@@ -14,4 +19,5 @@ public interface ActivityRepository extends PagingAndSortingRepository<Activity,
      * @return
      */
     Page<Activity> findByNameLike(String name, Pageable pageable);
+    
 }

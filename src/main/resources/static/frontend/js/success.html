@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection"content="telephone=no, email=no" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <title>签到成功</title>
+    <link rel="stylesheet" href="css/amazeui.min.css"/>
+</head>
+
+<body>
+<div class="closess" style="position: absolute; width: 100%;height: 130px;top: 35%;"></div>
+<div>
+    <img class="imgheigh" src="img/P2.jpg" alt="" height="100%"/>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/amazeui.min.js"></script>
+<script src="js/config.js" charset="UTF-8"></script>
+<script src="js/wx.js"></script>
+<script>
+    $(document).ready(function(){
+       $(".imgheigh").css({
+           'width':$(document).width(),
+           'height':$(document).height()
+       })
+        $(".closess").click(function(){
+            wx.closeWindow();
+        })
+    });
+</script>
+</body>
+</html>

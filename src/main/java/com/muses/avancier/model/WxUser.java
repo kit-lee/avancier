@@ -4,7 +4,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,7 +25,7 @@ import com.alibaba.fastjson.annotation.JSONField;
  */
 @Entity
 @Table(indexes = { 
-        @Index(name="idx_openid", columnList="activityId,openId", unique=true)
+        @Index(name="idx_openid", columnList="openId")
         })
 public class WxUser {
 

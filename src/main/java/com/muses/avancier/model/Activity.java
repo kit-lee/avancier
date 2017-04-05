@@ -21,7 +21,9 @@ import javax.persistence.TemporalType;
 @Table(name="activity")
 public class Activity {
 
-    
+    /**
+     * 主键
+     */
     private Long id;
     
     /**
@@ -38,6 +40,13 @@ public class Activity {
      * 结束日期
      */
     private Date end;
+    
+    /**
+     * 活动类型
+     * checkin 签到，一活动一微信号一次签到
+     * barrage 弹幕，一活动一微信号多次
+     */
+    private String type;
     
     /**
      * 数据是否需审核
@@ -82,6 +91,15 @@ public class Activity {
 
     public void setEnd(Date end) {
         this.end = end;
+    }
+
+    @Column(name = "actType", length = 7)
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Column(name = "needAudit", nullable = false)

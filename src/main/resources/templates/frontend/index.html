@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+</head>
+
+<body>
+<script src="" data-th-src="@{/frontend/js/jquery.min.js}"></script>
+<script data-th-if="${activity} == null">
+alert("您来晚啦！活动已经过期！");
+</script>
+<script data-th-if="${activity} != null">
+function urlEncoding(pageUrl) {
+    while (pageUrl.indexOf(":") > -1 || pageUrl.indexOf("/") > -1 ||
+    pageUrl.indexOf("?") > -1 || pageUrl.indexOf("=") > -1 ||
+    pageUrl.indexOf("&") > -1) {
+        pageUrl = pageUrl.replace(":", "%3a");
+        pageUrl = pageUrl.replace("/", "%2f");
+        pageUrl = pageUrl.replace("?", "%3f");
+        pageUrl = pageUrl.replace("=", "%3d");
+        pageUrl = pageUrl.replace("&", "%26");
+    }
+    return pageUrl;
+}
+//判断是否是微信内置浏览器
+function isWeixin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }else{
+        return false;
+    }
+};
+
+    $(document).ready(function(){
+    	var snaurl = "http://weixin.91zmt.com/wxapi/sns/oauth2?appId=[[${wxAppId}]]&webcode=&scope=snsapi_userinfo&success_page=" + urlEncoding('[[${baseUrl}+@{/frontend/checkin}+'?activityId='+${#request.getParameter('activityId')}]]') + "&cancel_page=" + urlEncoding('[[${baseUrl}+@{/frontend/cancel}]]');
+    	console.debug(snaurl);
+        if(isWeixin()==true){
+        	var openid = localStorage.getItem('avancier_'+[[${#request.getParameter('activityId')}]]+'_openId');
+            if(openid == '' || openid == undefined || openid === 'null'){
+                window.location.href = snaurl;
+            } else {
+            	window.location.href = '[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]';
+            }
+        }
+        
+   })
+</script>
+</body>
+</html>

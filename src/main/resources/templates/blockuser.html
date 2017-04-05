@@ -6,7 +6,7 @@
 <meta name="description" content="妙思科技Web应用管理后台">
 <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
 
-<title>待审核清单 - 妙思科技应用管理后台</title>
+<title>黑名单 - 妙思科技应用管理后台</title>
 <link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
 
 <!-- Google icon -->
@@ -54,34 +54,33 @@
 	<div class="container-fluid full-width-container data-tables">
 		<!-- Title -->
         <h1 class="section-title" id="services">
-            <span>待审核清单</span>
+            <span>黑名单</span>
         </h1><!-- End Title -->
         
         <!--breadcrum start-->
         <ol class="breadcrumb text-left">
           <li><a href="" data-th-href="@{/}">首页</a></li>
-          <li class="active">待审核清单</li>
+          <li class="active">黑名单</li>
         </ol><!--breadcrum end-->
         
         <!-- table card -->
         <section class="row component-section">
-            <input type="hidden" id="checkwxuser-csrf" name="_csrf" value=""  data-th-value="${_csrf.token}" />
+            <input type="hidden" id="blockuser-csrf" name="_csrf" value=""  data-th-value="${_csrf.token}" />
             <!-- table card code and example -->
             <div class="col-md-12">
                 <div class="component-box">
                     <!-- table card example -->
                     <div  class="pmd-card pmd-z-depth pmd-card-custom-view">
                         <div class="table-responsive">
-                            <table id="checkwxuser-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
+                            <table id="blockuser-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
 		                        <thead>
 		                            <tr>
 		                                <th></th>
 		                                <th></th>
-		                                <th>活动</th>
+		                                <th>序号</th>
 		                                <th>微信用户</th>
 		                                <th>头像</th>
-		                                <th>签到时间</th>
-		                                <th>留言</th>
+		                                <th>openId</th>
 		                            </tr>
 		                        </thead>
 		                    </table>
@@ -138,7 +137,7 @@
 var table;
 $(document).ready(function(){
 	//数据表格初始化
-	table = $('#checkwxuser-table').DataTable({
+	table = $('#blockuser-table').DataTable({
         responsive: false,
         columnDefs: [ {
             orderable: false,
@@ -160,7 +159,7 @@ $(document).ready(function(){
         bLengthChange: true,
         processing: true,
         serverSide: true,
-        ajax: './wxrecord/json?checked=0',
+        ajax: './blockusers/json',
         pagingType: "simple",
         paging: true,
         searching: false,
@@ -168,7 +167,7 @@ $(document).ready(function(){
         	"sProcessing":"处理中...",
         	"sLoadingRecords": "载入中...",
         	"sZeroRecords":  "没有匹配的结果",
-        	"emptyTable":"未有任何待审记录",
+        	"emptyTable":"未有任何黑名单记录",
         	"sInfo":"显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
             "sLengthMenu": "<span class='custom-select-title'>每页显示:</span> <span class='custom-select'> _MENU_ </span> 项记录",
             "paginate": {
@@ -183,12 +182,10 @@ $(document).ready(function(){
     });
     
     //表格顶部菜单栏
-    $("div.data-table-title").html('<button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
-    		' <button id="checkwxuser-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除签到 </button >'+
-    		' <button id="checkwxuser-btn-block" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >');
+    $("div.data-table-title").html('<button id="blockuser-btn-delete" type="button" class="btn pmd-ripple-effect btn-primary"> 解除黑名单 </button >');
     
     //删除选中
-    $('#checkwxuser-btn-delete').click( function () {
+    $('#blockuser-btn-delete').click( function () {
     	var data = table.rows('.selected').data();
     	var ids = '';
     	for(var i=0;i<data.length;i++){
@@ -200,7 +197,7 @@ $(document).ready(function(){
     	}
 
     	$.ajax({
-    		url:'./wxrecord/'+ids+'?_csrf='+$('#checkwxuser-csrf').val(),
+    		url:'./blockusers/'+ids+'?_csrf='+$('#blockuser-csrf').val(),
     		type:'DELETE',
     		dataType:'text',
     		success:function(t){
@@ -210,53 +207,7 @@ $(document).ready(function(){
     		}
     	})
     } );
-    //审核通过按钮动作
-    $('#checkwxuser-btn-check').click(function() {
-    	var data = table.rows('.selected').data();
-        var ids = '';
-        for(var i=0;i<data.length;i++){
-            var d = data[i];
-            if(ids!=='')
-                  ids+=','+d[1];
-            else
-                ids+=d[1];
-        }
 
-        $.ajax({
-            url:'./wxrecord/'+ids+'?checked=1&_csrf='+$('#checkwxuser-csrf').val(),
-            type:'PUT',
-            dataType:'text',
-            success:function(t){
-                if(t=='true'){
-                    table.draw();
-                }
-            }
-        })
-    });
-
-  //添加到黑名单按钮动作
-    $('#checkwxuser-btn-block').click(function() {
-        var data = table.rows('.selected').data();
-        var ids = '';
-        for(var i=0;i<data.length;i++){
-            var d = data[i];
-            if(ids!=='')
-                  ids+=','+d[1];
-            else
-                ids+=d[1];
-        }
-
-        $.ajax({
-            url:'./wxrecord/'+ids+'?block=1&_csrf='+$('#checkwxuser-csrf').val(),
-            type:'POST',
-            dataType:'text',
-            success:function(t){
-                if(t=='true'){
-                    table.draw();
-                }
-            }
-        })
-    });
 })
 </script>
 </body>

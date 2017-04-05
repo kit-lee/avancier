@@ -1,6 +1,5 @@
 package com.muses.avancier.controller;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.muses.avancier.model.WxUser;
+import com.muses.avancier.service.BlockUserService;
 import com.muses.avancier.service.WxUserService;
 import com.muses.common.util.DateUtil;
 
@@ -38,6 +38,9 @@ public class WxUserController {
     
     @Autowired
     private WxUserService wxUserService;
+    
+    @Autowired
+    private BlockUserService blockUserService;
 
     
     /**
@@ -55,7 +58,7 @@ public class WxUserController {
      */
     @RequestMapping(value="/wxrecord/json", params="checked=0", method=RequestMethod.GET)
     @ResponseBody
-    public byte[] checkWxUserListJson(@RequestParam int draw, @RequestParam int start, @RequestParam int length, HttpServletRequest request){
+    public byte[] checkWxUserListJson(@RequestParam int draw, @RequestParam int start, @RequestParam int length){
         int page = start / length;
         Pageable wrapped = new PageRequest(page, length, new Sort(Direction.DESC, "id"));
         
@@ -74,7 +77,7 @@ public class WxUserController {
             arr[2] = wxUser.getActivity().getName();
             arr[3] = wxUser.getNickname();
             arr[4] = wxUser.getHeadpic();
-            arr[5] = DateUtil.DateToString(wxUser.getCreatetime(), "yyyy-MM-dd");
+            arr[5] = DateUtil.DateToString(wxUser.getCreatetime(), "yyyy-MM-dd HH:mm:ss");
             arr[6] = wxUser.getMessage();
 
             data.add(arr);
@@ -117,5 +120,23 @@ public class WxUserController {
             return "false".getBytes();
         }
         return "true".getBytes();
+    }
+    
+    /**
+     * 将用户添加到黑名单
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value="/wxrecord/{ids}", params="block=1", method=RequestMethod.POST)
+    @ResponseBody
+    public byte[] addBlockUser(@PathVariable Long[] ids){
+        try{
+        blockUserService.blockUser(ids);
+        }catch(Exception ex){
+            log.error(ex.getMessage(), ex);
+            return "false".getBytes();
+        }
+        return "true".getBytes();
+        
     }
 }
