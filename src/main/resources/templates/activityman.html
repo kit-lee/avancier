@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="妙思科技Web应用管理后台">
+<meta name="description" content="妙思科技微信上墙应用">
 <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
 
-<title>活动管理 - 妙思科技应用管理后台</title>
+<title>活动管理 - 妙思科技微信上墙应用</title>
 <link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
 
 <!-- Google icon -->
@@ -86,6 +86,8 @@
 		                                <th>需审核</th>
 		                                <th>类型</th>
 		                                <th>二维码</th>
+		                                <th></th>
+		                                <th></th>
 		                            </tr>
 		                        </thead>
 		                    </table>
@@ -118,15 +120,15 @@
 					    <input type="hidden" id="activity-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
 					    <input type="hidden" id="activity-form-id" name="id" value="">
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name" class="control-label">活动名称</label>
+							<label for="activity-form-name" class="control-label">活动名称</label>
 							<input type="text" class="mat-input form-control" id="activity-form-name" name="name" value="">
 							<span class="help-block"></span>
 						</div>
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name">开始时间</label> <input type="text" class="mat-input form-control" id="activity-form-start" name="start" value="">
+							<label for="activity-form-start">开始时间</label> <input type="text" class="mat-input form-control" id="activity-form-start" name="start" value="">
 						</div>
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="first-name">结束时间</label> <input type="text" class="mat-input form-control" id="activity-form-end" name="end" value="">
+							<label for="activity-form-end">结束时间</label> <input type="text" class="mat-input form-control" id="activity-form-end" name="end" value="">
 						</div>
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
                             <label for="first-name">活动类型</label> 
@@ -139,6 +141,12 @@
 							class="checkbox-inline pmd-checkbox pmd-checkbox-ripple-effect">
 							<input type="checkbox" id="activity-form-needAudit" name="needAudit" value="1"> <span class="pmd-checkbox"> 资料需通过审核</span>
 						</label>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">默认OpenId</label> <input type="text" class="mat-input form-control" id="activity-form-defOpenId" name="defOpenId" value="">
+                        </div>
+                        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">默认头像</label> <input type="text" class="mat-input form-control" id="activity-form-defHeadPic" name="defHeadPic" value="">
+                        </div>
 					</form>
 				</div>
 				<div class="pmd-modal-action">
@@ -217,6 +225,12 @@ $(document).ready(function(){
         	render: function ( data, type, full, meta ) {
         	      return '<a href="javascript:editRows('+full[7]+')">'+data+'</a>';
         	}
+        },{
+            targets:8,
+            visible: false
+        },{
+            targets:9,
+            visible: false
         } ],
         select: {
             style: 'multi',
@@ -284,6 +298,10 @@ $(document).ready(function(){
     	$('#activity-form-start').val('');
     	$('#activity-form-end').val('');
     	$('#activity-form-needAudit').prop('checked', false);
+    	$('#activity-form-defOpenId').val('');
+    	$('#activity-form-defOpenId').parent().hide();
+    	$('#activity-form-defHeadPic').val('');
+        $('#activity-form-defHeadPic').parent().hide();
         $('#activity-dialog-edit').modal('show');
     });
     //日期控件初始化
@@ -322,6 +340,16 @@ $(document).ready(function(){
     	})
     });
 
+    $('#activity-form-type').change(function(){
+    	var t = $(this).val();
+    	if(t=='barrage'){
+            $('#activity-form-defOpenId').parent().show();
+            $('#activity-form-defHeadPic').parent().show();
+    	}else{
+    		$('#activity-form-defOpenId').parent().hide();
+            $('#activity-form-defHeadPic').parent().hide();
+    	}
+    })
 })
 //打开模态窗口，修改活动内容
 function editRows(id){
@@ -341,6 +369,9 @@ function editRows(id){
             	$('#activity-form-type').val('checkin');
             else
             	$('#activity-form-type').val('barrage');
+            
+            $('#activity-form-defOpenId').val(data[i][8]);
+            $('#activity-form-defHeadPic').val(data[i][9]);
             
             $('#activity-form .form-group').addClass('pmd-textfield-floating-label-completed');
             $('#activity-dialog-edit').modal('show');

@@ -92,7 +92,7 @@ public class ActivityController {
         JSONArray data = new JSONArray();
         for (int i = 0; i < activities.getContent().size(); i++) {
             Activity activity = activities.getContent().get(i);
-            String[] arr = new String[8];
+            String[] arr = new String[10];
             arr[0] = "";
             arr[1] = String.valueOf(length * page + i + 1);
             arr[2] = activity.getName();
@@ -103,6 +103,8 @@ public class ActivityController {
             arr[5] = activity.isNeedAudit() ? "是" : "";
             arr[6] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
             arr[7] = String.valueOf(activity.getId());
+            arr[8] = activity.getDefOpenId() != null ? activity.getDefOpenId() : "";
+            arr[9] = activity.getDefHeadPic() != null ? activity.getDefHeadPic() : "";
 
             data.add(arr);
         }

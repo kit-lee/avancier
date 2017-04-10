@@ -9,3 +9,4 @@ buildNumber.properties
 .mvn/timing.properties
 avancier.mv.db
 logs
+application-prod.properties

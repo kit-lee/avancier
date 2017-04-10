@@ -52,6 +52,18 @@ public class Activity {
      * 数据是否需审核
      */
     private boolean needAudit;
+    
+    /**
+     * 默认微信用户openId
+     * 仅在弹幕类型活动支持
+     */
+    private String defOpenId;
+    
+    /**
+     * 默认头像信息
+     * 仅在弹幕类型活动支持
+     */
+    private String defHeadPic;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -109,6 +121,24 @@ public class Activity {
 
     public void setNeedAudit(boolean needAudit) {
         this.needAudit = needAudit;
+    }
+
+    @Column(name = "defOpenId", length = 30)
+    public String getDefOpenId() {
+        return defOpenId;
+    }
+
+    public void setDefOpenId(String defOpenId) {
+        this.defOpenId = defOpenId;
+    }
+
+    @Column(name = "defHeadPic", length = 200)
+    public String getDefHeadPic() {
+        return defHeadPic;
+    }
+
+    public void setDefHeadPic(String defHeadPic) {
+        this.defHeadPic = defHeadPic;
     }
     
 }

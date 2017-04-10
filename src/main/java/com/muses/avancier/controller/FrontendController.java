@@ -54,11 +54,17 @@ public class FrontendController {
      */
     @RequestMapping("/checkin")
     public ModelAndView checkin(@RequestParam long activityId, HttpServletRequest request){
-        String baseUrl = request.getScheme()+"://"+request.getServerName()+(request.getServerPort()!=80?":"+request.getServerPort():"");
+        Activity activity = activityService.getActivity(activityId);
         String apiAddress = request.getContextPath().equals("/")?"":request.getContextPath()+"/api/activity/"+activityId+"/user";
         ModelAndView view = new ModelAndView("/frontend/checkin");
         view.addObject("apiAddress", apiAddress);
         view.addObject("wxAppId", wxAppId);
+        if(activity!=null && activity.getDefOpenId()!=null &&
+                !activity.getDefOpenId().isEmpty()){
+            view.addObject("openId", activity.getDefOpenId());
+            view.addObject("headPic", activity.getDefHeadPic());
+        }
+            
         return view;
     }
     

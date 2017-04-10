@@ -69,32 +69,49 @@
         };
         
         var userinfo=null;
+        var defOpenId = '[[${openId}!=null ? ${openId} : '']]';
+        var defHeadPic = '[[${headPic}!=null ? ${headPic} : '']]';
         
         $(document).ready(function(){
-            var openid = localStorage.getItem('avancier_'+[[${#request.getParameter('activityId')}]]+'_openId');
-            var refreshToken =localStorage.getItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken');
-            if(openid==undefined || openid==null){
-                openid = getQueryParam('open_id');
-                refreshToken = getQueryParam('refresh_token');
-                if(openid==null){
-                    window.location.href = "[[@{/frontend}+'?activityId='+${#request.getParameter('activityId')}]]";
-                    return;
-                }
-                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_openId', openid);
-                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken', refreshToken);
-                
-            }
-           
-            $.ajax({
-                url: "http://weixin.91zmt.com/wxapi/sns/userinfo?appId=[[${wxAppId}]]&open_id=" + openid + "&refresh_token=" + refreshToken,
-                type: "GET",
-                dataType: "JSON",
-                success : function (datas){
-                    var data = datas.data;
-                    userinfo = datas.data;
-                    $('#inputfield').show();
-                }
-            });
+        	if(defOpenId==''){
+	            var openid = localStorage.getItem('avancier_[[${#request.getParameter('activityId')}]]_openId');
+	            var refreshToken =localStorage.getItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken');
+	            if(openid==undefined || openid==null){
+	                openid = getQueryParam('open_id');
+	                refreshToken = getQueryParam('refresh_token');
+	                if(openid==null){
+	                    window.location.href = "[[@{/frontend}+'?activityId='+${#request.getParameter('activityId')}]]";
+	                    return;
+	                }
+	                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_openId', openid);
+	                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken', refreshToken);
+	                
+	            }
+	           
+	            $.ajax({
+	                url: "http://weixin.91zmt.com/wxapi/sns/userinfo?appId=[[${wxAppId}]]&open_id=" + openid + "&refresh_token=" + refreshToken,
+	                type: "GET",
+	                dataType: "JSON",
+	                success : function (datas){
+	                	if(datas.result==true){
+		                    var data = datas.data;
+		                    userinfo = datas.data;
+		                    $('#inputfield').show();
+	                	}else{
+	                		//获取失败有可能是授权问题，重新去获得授权
+	                		localStorage.removeItem('avancier_[[${#request.getParameter('activityId')}]]_openId');
+	                		localStorage.removeItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken');
+	                		window.location.href = "[[@{/frontend}+'?activityId='+${#request.getParameter('activityId')}]]";
+	                	}
+	                }
+	            });
+        	}else{
+        		userinfo = {};
+        		userinfo.openid=defOpenId;
+        		userinfo.headimgurl=defHeadPic;
+        		userinfo.nickname='匿名用户';
+        		$('#inputfield').show();
+        	}
             
             $('#postme').click(function(){
                 var msg = $('#message').val();
