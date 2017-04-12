@@ -34,25 +34,24 @@ function isWeixin(){
 
 var defOpenId = '[[${activity.defOpenId}]]';
 
-    $(document).ready(function(){
-    	var snaurl = "http://weixin.91zmt.com/wxapi/sns/oauth2?appId=[[${wxAppId}]]&webcode=&scope=snsapi_userinfo&success_page=" + urlEncoding('[[${baseUrl}+@{/frontend/checkin}+'?activityId='+${#request.getParameter('activityId')}]]') + "&cancel_page=" + urlEncoding('[[${baseUrl}+@{/frontend/cancel}]]');
-    	
-        if(isWeixin()==true){
-        	var openid = localStorage.getItem('avancier_'+[[${#request.getParameter('activityId')}]]+'_openId');
-            if(openid == '' || openid == undefined || openid === 'null'){
-                window.location.href = snaurl;
-            } else {
-            	window.location.href = '[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]';
-            }
-        }else{
-        	console.log(defOpenId);
-        	if(defOpenId!=='')
-        		window.location.href = '[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]';
-        	else
-        		window.location.href = snaurl;
-        }
-        
-   })
+ $(document).ready(function(){
+ 	var snaurl = "http://weixin.91zmt.com/wxapi/sns/oauth2?appId=[[${wxAppId}]]&webcode=&scope=snsapi_userinfo&success_page=" + urlEncoding('[[${baseUrl}+@{/frontend/checkin}+'?activityId='+${#request.getParameter('activityId')}]]') + "&cancel_page=" + urlEncoding('[[${baseUrl}+@{/frontend/cancel}]]');
+ 	
+     if(isWeixin()==true){
+     	var openid = localStorage.getItem('avancier_'+[[${#request.getParameter('activityId')}]]+'_openId');
+         if(openid == '' || openid == undefined || openid === 'null'){
+            window.location.href = snaurl;
+         } else {
+         	window.location.href = '[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]';
+         }
+     }else{
+     	if(defOpenId!=='')
+     		window.location.href = '[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]';
+     	else
+     		window.location.href = snaurl;
+     }
+     
+})
 </script>
 </body>
 </html>

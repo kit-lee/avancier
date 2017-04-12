@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,13 +54,18 @@ public class FrontendController {
      * @return
      */
     @RequestMapping("/checkin")
-    public ModelAndView checkin(@RequestParam long activityId, HttpServletRequest request){
+    public ModelAndView checkin(@RequestParam long activityId, 
+            @RequestHeader ("User-Agent") String userAgent,
+            HttpServletRequest request){
         Activity activity = activityService.getActivity(activityId);
         String apiAddress = request.getContextPath().equals("/")?"":request.getContextPath()+"/api/activity/"+activityId+"/user";
         ModelAndView view = new ModelAndView("/frontend/checkin");
         view.addObject("apiAddress", apiAddress);
         view.addObject("wxAppId", wxAppId);
-        if(activity!=null && activity.getDefOpenId()!=null &&
+        
+        boolean isWeixin = userAgent.indexOf("micromessenger")!=-1;
+        if(!isWeixin && activity!=null && 
+                activity.getDefOpenId()!=null &&
                 !activity.getDefOpenId().isEmpty()){
             view.addObject("openId", activity.getDefOpenId());
             view.addObject("headPic", activity.getDefHeadPic());
