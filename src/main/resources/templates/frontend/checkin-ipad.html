@@ -8,7 +8,7 @@
     <title></title>
     <style>
         body {
-            background-image: url('../frontend/img/bg.jpg');
+            background-image: url('../frontend/img/bg-ipad.jpg');
             background-size: 100%;
             background-repeat: no-repeat;
             margin: 0px;
@@ -31,7 +31,7 @@
 </head>
 <body style="">
 <div id="inputfield" style="display:none;">
-<textarea type="text" id="message" name="message" placeholder="请输入您此刻的想法，为南区加油！"></textarea>
+<textarea type="text" id="message" name="message" rows="8" placeholder="请输入您此刻的想法，为南区加油！"></textarea>
 <div id="div_start_btn">
     <a href="javascript:void(0);" id="postme"><img src="" data-th-src="@{/frontend/img/spacer.gif}" id="img_start_btn"></a>
 </div>
@@ -130,13 +130,13 @@
 
             //计算控件位置
             var sw = $('body').width();
-            var inputfieldTop = sw / 3.76;
-            var inputfieldLeft = sw / 16;
+            var inputfieldTop = sw / 5.8;
+            var inputfieldLeft = sw / 20;
             var messageWidth = sw / 1.15;
-            var messageHeight = sw / 2.76;
+            var messageHeight = sw / 3.8;
             var imgsize = sw / 4.6;
-            var imgdivLeft = sw / 3.1;
-            var imgdivTop = sw / 2.35;
+            var imgdivLeft = sw / 2.8;
+            var imgdivTop = sw / 2.5;
             $('#inputfield').css('margin-top', inputfieldTop+'px');
             $('#inputfield').css('margin-left', inputfieldLeft+'px');
             $('#message').css('width', messageWidth+'px');

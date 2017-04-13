@@ -59,7 +59,11 @@ public class FrontendController {
             HttpServletRequest request){
         Activity activity = activityService.getActivity(activityId);
         String apiAddress = request.getContextPath().equals("/")?"":request.getContextPath()+"/api/activity/"+activityId+"/user";
-        ModelAndView view = new ModelAndView("/frontend/checkin");
+        ModelAndView view = null;
+        if(userAgent.indexOf("(iPad;")!=-1)
+            view = new ModelAndView("/frontend/checkin-ipad");
+        else
+            view = new ModelAndView("/frontend/checkin");
         view.addObject("apiAddress", apiAddress);
         view.addObject("wxAppId", wxAppId);
         
