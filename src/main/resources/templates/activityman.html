@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="妙思科技微信上墙应用">
+<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
+
+<title>活动管理 - 妙思科技微信上墙应用</title>
+<link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
+
+<!-- Google icon -->
+<link href="" rel="stylesheet" data-th-href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" />
+
+<!-- Bootstrap css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/bootstrap.min.css}" />
+<!-- Propeller css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/propeller.min.css}" />
+
+<!-- Propeller date time picker css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/bootstrap-datetimepicker.css}" />
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/datetimepicker/css/pmd-datetimepicker.css}" />
+
+<!-- DataTables css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/responsive/2.1.0/css/responsive.bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css}">
+<!-- Propeller dataTables css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/data-table/css/pmd-datatable.css}">
+
+<!-- Propeller theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-theme.css}" />
+
+<!-- Propeller admin theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-admin.css}" />
+</head>
+
+<!-- Styles Ends -->
+
+<body>
+<!-- Header Starts -->
+<!--Start Nav bar -->
+<nav data-th-replace="index :: navbar">
+</nav><!--End Nav bar -->
+<!-- Header Ends -->
+
+<!-- Sidebar Starts -->
+<div class="pmd-sidebar-overlay"></div>
+
+<!-- Left sidebar -->
+<aside data-th-replace="index :: sidebar">
+</aside><!-- End Left sidebar -->
+<!-- Sidebar Ends -->  
+	
+<!--content area start-->
+<div id="content" class="pmd-content inner-page">
+
+	<div class="container-fluid full-width-container data-tables">
+		<!-- Title -->
+        <h1 class="section-title" id="services">
+            <span>活动管理</span>
+        </h1><!-- End Title -->
+        
+        <!--breadcrum start-->
+        <ol class="breadcrumb text-left">
+          <li><a href="" data-th-href="@{/}">首页</a></li>
+          <li class="active">活动管理</li>
+        </ol><!--breadcrum end-->
+        
+        <!-- table card -->
+        <section class="row component-section">
+            <!-- table card code and example -->
+            <div class="col-md-12">
+                <div class="component-box">
+                    <!-- table card example -->
+                    <div  class="pmd-card pmd-z-depth pmd-card-custom-view">
+                        <div class="table-responsive">
+                            <table id="activity-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
+		                        <thead>
+		                            <tr>
+		                                <th></th>
+		                                <th>序号</th>
+		                                <th>活动名称</th>
+		                                <th>开始时间</th>
+		                                <th>结束时间</th>
+		                                <th>需审核</th>
+		                                <th>类型</th>
+		                                <th>二维码</th>
+		                                <th></th>
+		                                <th></th>
+		                            </tr>
+		                        </thead>
+		                    </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div><!--end content area-->
+
+<!-- Footer Starts -->
+<!--footer start-->
+<footer data-th-replace="index :: footer">
+</footer>
+<!--footer end-->
+<!-- Footer Ends -->
+
+<!-- Modals start -->
+	<div tabindex="-1" class="modal fade" id="activity-dialog-edit" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bordered">
+					<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+					<h2 class="pmd-card-title-text">添加 | 修改活动</h2>
+				</div>
+				<div class="modal-body">
+					<form id="activity-form" class="form-horizontal">
+					    <input type="hidden" id="activity-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
+					    <input type="hidden" id="activity-form-id" name="id" value="">
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="activity-form-name" class="control-label">活动名称</label>
+							<input type="text" class="mat-input form-control" id="activity-form-name" name="name" value="">
+							<span class="help-block"></span>
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="activity-form-start">开始时间</label> <input type="text" class="mat-input form-control" id="activity-form-start" name="start" value="">
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="activity-form-end">结束时间</label> <input type="text" class="mat-input form-control" id="activity-form-end" name="end" value="">
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">活动类型</label> 
+                            <select id="activity-form-type" class="form-control" name="type">
+                                <option value="checkin">签到</option>
+                                <option value="barrage">弹幕</option>
+                            </select>
+                        </div>
+						<label
+							class="checkbox-inline pmd-checkbox pmd-checkbox-ripple-effect">
+							<input type="checkbox" id="activity-form-needAudit" name="needAudit" value="1"> <span class="pmd-checkbox"> 资料需通过审核</span>
+						</label>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">默认OpenId</label> <input type="text" class="mat-input form-control" id="activity-form-defOpenId" name="defOpenId" value="">
+                        </div>
+                        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="first-name">默认头像</label> <input type="text" class="mat-input form-control" id="activity-form-defHeadPic" name="defHeadPic" value="">
+                        </div>
+					</form>
+				</div>
+				<div class="pmd-modal-action">
+					<button id="activity-form-submit" class="btn pmd-ripple-effect btn-primary" type="button">保存</button>
+					<button data-dismiss="modal" class="btn pmd-ripple-effect btn-default" type="button">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal 二维码图片 -->
+	<div tabindex="-1" class="modal fade" id="activity-frontend-modal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" style="height:450px;">
+            <div class="modal-content">
+                <div class="pmd-modal-media"><img style="margin:0 auto;" id="activity-frontend-qrcode" class="img-responsive" src=""></div>
+                <div class="modal-body" id="activity-frontend-link"></div>
+            </div>
+        </div>
+    </div>
+	<!-- 二维码图片Modal End -->
+
+	<!-- Modals Ends -->
+
+<!-- Scripts Starts -->
+<script src="" data-th-src="@{/assets/js/jquery-1.12.2.min.js}"></script>
+<script src="" data-th-src="@{/assets/js/bootstrap.min.js}"></script>
+<script src="" data-th-src="@{/assets/js/propeller.min.js}"></script>
+<script>
+	$(document).ready(
+			function() {
+				var sPath = window.location.pathname;
+				var sPage = sPath;//sPath.substring(sPath.lastIndexOf('/') + 1);
+				$(".pmd-sidebar-nav").each(
+						function() {
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").addClass("open");
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").find('.dropdown-menu').css("display", "block");
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").find('a.dropdown-toggle').addClass("active");
+							$(this).find("a[href='" + sPage + "']").addClass("active");
+						});
+			});
+	
+</script>
+
+<!-- Javascript for Datepicker -->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{/components/datetimepicker/js/moment-with-locales.js}"></script>
+<script type="text/javascript" language="javascript" src="" data-th-src="@{/components/datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+
+<!-- Datatable js -->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js}"></script>
+
+<!-- Datatable Bootstrap -->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js}"></script>
+
+<!-- Datatable responsive js-->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js}"></script>
+
+<!-- Datatable select js-->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js}"></script>
+<script>
+var table;
+$(document).ready(function(){
+	//数据表格初始化
+	table = $('#activity-table').DataTable({
+        responsive: false,
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            targets:0,
+        },{
+            targets:7,
+            render: function ( data, type, full, meta ) {
+                return '<a href="javascript:showQrCode('+data+')">查看</a>';
+            }
+        },{
+        	targets:2,
+        	render: function ( data, type, full, meta ) {
+        	      return '<a href="javascript:editRows('+full[7]+')">'+data+'</a>';
+        	}
+        },{
+            targets:8,
+            visible: false
+        },{
+            targets:9,
+            visible: false
+        } ],
+        select: {
+            style: 'multi',
+            selector: 'td:first-child'
+        },
+        //order: [ 1, 'asc' ],
+        bFilter: true,
+        bLengthChange: true,
+        processing: true,
+        serverSide: true,
+        ajax: './activities/json',
+        pagingType: "simple",
+        "paging": true,
+        "searching": true,
+        "language": {
+        	"sProcessing":"处理中...",
+        	"sLoadingRecords": "载入中...",
+        	"sZeroRecords":  "没有匹配结果",
+        	"emptyTable":"未有任何活动",
+        	"sInfo":"显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+            "sLengthMenu": "<span class='custom-select-title'>每页显示:</span> <span class='custom-select'> _MENU_ </span> 项记录",
+            "sSearch": "",
+            "sSearchPlaceholder": "活动名查找",
+            "paginate": {
+                "sNext": " ",
+                "sPrevious": " "
+            },
+        },
+        dom:
+            "<'pmd-card-title'<'data-table-title'><'search-paper pmd-textfield'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'pmd-card-footer' <'pmd-datatable-pagination' l i p>>",
+    });
+    
+    //表格顶部菜单栏
+    $("div.data-table-title").html('<button id="activity-btn-addNew" type="button" class="btn pmd-ripple-effect btn-primary"> 添加活动 </button > <button id="activity-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除活动 </button >');
+    
+    //删除选中
+    $('#activity-btn-delete').click( function () {
+    	var data = table.rows('.selected').data();
+    	var ids = '';
+    	for(var i=0;i<data.length;i++){
+    		var d = data[i];
+    		if(ids!=='')
+    			  ids+=','+d[7];
+    		else
+    			ids+=d[7];
+    	}
+
+    	$.ajax({
+    		url:'./activities/'+ids+'?_csrf='+$('#activity-form-csrf').val(),
+    		type:'DELETE',
+    		dataType:'text',
+    		success:function(t){
+    			if(t=='true'){
+    				table.draw();
+    			}
+    		}
+    	})
+    } );
+    //添加活动按钮事件
+    $('#activity-btn-addNew').click(function() {
+    	$('#activity-form-id').val('');
+    	$('#activity-form-name').val('');
+    	$('#activity-form-start').val('');
+    	$('#activity-form-end').val('');
+    	$('#activity-form-needAudit').prop('checked', false);
+    	$('#activity-form-defOpenId').val('');
+    	$('#activity-form-defOpenId').parent().hide();
+    	$('#activity-form-defHeadPic').val('');
+        $('#activity-form-defHeadPic').parent().hide();
+        $('#activity-dialog-edit').modal('show');
+    });
+    //日期控件初始化
+    $('#activity-form-start').datetimepicker({
+        format : 'YYYY-MM-DD',
+        showClear : true,
+        collapse : false,
+        locale : 'zh-cn'
+    });
+    //日期控件初始化
+    $('#activity-form-end').datetimepicker({
+        format : 'YYYY-MM-DD',
+        showClear : true,
+        collapse : false,
+        locale : 'zh-cn'
+    });
+    
+    //提交内容
+    $('#activity-form-submit').click(function(){
+    	if($('#activity-form-name').val()==''){
+    		$('#activity-form-name').parent('.form-group').addClass('has-error');
+    		$('#activity-form-name').siblings('.help-block').html('活动名称必须填写');
+    		return;
+    	}
+    	var data = $('#activity-form').serialize();
+    	$.ajax({
+    		url:'./activities?'+data,
+    		type:'PUT',
+    		dataType:'text',
+    		success:function(t){
+    			if(t=='true'){
+    				table.draw();
+    			}
+    			$('#activity-dialog-edit').modal('hide');
+    		}
+    	})
+    });
+
+    $('#activity-form-type').change(function(){
+    	var t = $(this).val();
+    	if(t=='barrage'){
+            $('#activity-form-defOpenId').parent().show();
+            $('#activity-form-defHeadPic').parent().show();
+    	}else{
+    		$('#activity-form-defOpenId').parent().hide();
+            $('#activity-form-defHeadPic').parent().hide();
+    	}
+    })
+})
+//打开模态窗口，修改活动内容
+function editRows(id){
+    var data = table.rows().data();
+    for(var i=0;i<data.length;i++){
+    	if(id==data[i][7]){
+    		$('#activity-form-id').val(id);
+    		$('#activity-form-name').val(data[i][2]);
+    		
+            $('#activity-form-start').val(data[i][3]);
+            $('#activity-form-end').val(data[i][4]);
+            if(data[i][5]=='')
+                $('#activity-form-needAudit').prop('checked', false);
+            else
+            	$('#activity-form-needAudit').prop('checked', true);
+            if(data[i][6]=='签到')
+            	$('#activity-form-type').val('checkin');
+            else
+            	$('#activity-form-type').val('barrage');
+            
+            $('#activity-form-defOpenId').val(data[i][8]);
+            $('#activity-form-defHeadPic').val(data[i][9]);
+            
+            $('#activity-form .form-group').addClass('pmd-textfield-floating-label-completed');
+            $('#activity-dialog-edit').modal('show');
+    		break;
+    	}
+    }
+}
+//打开模态窗口，显示前端页面的二维码
+function showQrCode(id){
+	$('#activity-frontend-qrcode').attr('src', './activities/'+id+'/qrcode');
+	$('#activity-frontend-link').text('[[${baseUrl}+@{/frontend}]]?activityId='+id);
+	$('#activity-frontend-modal').modal('show');
+}
+</script>
+</body>
+</html>

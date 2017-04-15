@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="screen-orientation" content="portrait"><!-- uc强制竖屏 -->
+    <meta name="x5-orientation" content="portrait"><!-- QQ强制竖屏 -->
+    <title></title>
+    <style>
+        body {
+            background-image: url('../frontend/img/bg-ipad.jpg');
+            background-size: 100%;
+            background-repeat: no-repeat;
+            margin: 0px;
+        }
+
+        div,textarea {
+            padding:0px;
+            margin:0px;
+        }
+
+        #message{
+            border:0px;
+            background: transparent;
+            vertical-align: top;
+            resize: none;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body style="">
+<div id="inputfield" style="display:none;">
+<textarea type="text" id="message" name="message" rows="8" placeholder="请输入您此刻的想法，为南区加油！"></textarea>
+<div id="div_start_btn">
+    <a href="javascript:void(0);" id="postme"><img src="" data-th-src="@{/frontend/img/spacer.gif}" id="img_start_btn"></a>
+</div>
+<!--<button type="button" id="postme">签到！</button>-->
+</div>
+    <script src="" data-th-src="@{/frontend/js/jquery.min.js}"></script>
+    <script>
+        function postuser(open_id, headurl, nickname, message){
+            $.ajax({
+                url : "[[${apiAddress}]]",
+                type:'POST',
+                dataType:"text",
+                data:{
+                    'openId' : open_id,
+                    'headpic' : headurl,
+                    'nickName' : nickname,
+                    'message' : message,
+                    '_csrf' : '[[${_csrf.token}]]'
+                },
+                success:function(data){
+                    if(data=='true'){
+                    	alert('留言已提交');
+                    	$('#message').val('');
+                        //window.location.href = "[[@{/frontend/success}]]?activityId=[[${#request.getParameter('activityId')}]]";
+                    }else
+                        alert('您已经参与过');
+                }
+            })
+        }
+        
+         function getQueryParam(name){
+              var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+              var r = window.location.search.substr(1).match(reg);
+              if (r!=null) return unescape(r[2]); return null;
+        };
+        
+        var userinfo=null;
+        var defOpenId = '[[${openId}!=null ? ${openId} : '']]';
+        var defHeadPic = '[[${headPic}!=null ? ${headPic} : '']]';
+        
+        $(document).ready(function(){
+        	if(defOpenId==''){
+	            var openid = localStorage.getItem('avancier_[[${#request.getParameter('activityId')}]]_openId');
+	            var refreshToken =localStorage.getItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken');
+	            if(openid==undefined || openid==null){
+	                openid = getQueryParam('open_id');
+	                refreshToken = getQueryParam('refresh_token');
+	                if(openid==null){
+	                    window.location.href = "[[@{/frontend}+'?activityId='+${#request.getParameter('activityId')}]]";
+	                    return;
+	                }
+	                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_openId', openid);
+	                localStorage.setItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken', refreshToken);
+	                
+	            }
+	           
+	            $.ajax({
+	                url: "http://weixin.91zmt.com/wxapi/sns/userinfo?appId=[[${wxAppId}]]&open_id=" + openid + "&refresh_token=" + refreshToken,
+	                type: "GET",
+	                dataType: "JSON",
+	                success : function (datas){
+	                	if(datas.result==true){
+		                    var data = datas.data;
+		                    userinfo = datas.data;
+		                    $('#inputfield').show();
+	                	}else{
+	                		//获取失败有可能是授权问题，重新去获得授权
+	                		localStorage.removeItem('avancier_[[${#request.getParameter('activityId')}]]_openId');
+	                		localStorage.removeItem('avancier_[[${#request.getParameter('activityId')}]]_refreshtoken');
+	                		window.location.href = "[[@{/frontend}+'?activityId='+${#request.getParameter('activityId')}]]";
+	                	}
+	                }
+	            });
+        	}else{
+        		userinfo = {};
+        		userinfo.openid=defOpenId;
+        		userinfo.headimgurl=defHeadPic;
+        		userinfo.nickname='匿名用户';
+        		$('#inputfield').show();
+        	}
+            
+            $('#postme').click(function(){
+                var msg = $('#message').val();
+                postuser(userinfo.openid, userinfo.headimgurl, userinfo.nickname, msg);
+            });
+
+        })
+        
+        //捕捉翻转事件
+        window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", warnOrientation, false);
+        function warnOrientation(){
+        	if (window.orientation == 90 || window.orientation == -90) {
+                alert('本页面仅支持竖屏使用');
+             }
+        }
+
+            //计算控件位置
+            var sw = $('body').width();
+            var inputfieldTop = sw / 5.8;
+            var inputfieldLeft = sw / 20;
+            var messageWidth = sw / 1.15;
+            var messageHeight = sw / 3.8;
+            var imgsize = sw / 4.6;
+            var imgdivLeft = sw / 2.8;
+            var imgdivTop = sw / 2.5;
+            $('#inputfield').css('margin-top', inputfieldTop+'px');
+            $('#inputfield').css('margin-left', inputfieldLeft+'px');
+            $('#message').css('width', messageWidth+'px');
+            $('#message').css('height', messageHeight+'px');
+            $('#img_start_btn').css('width', imgsize+'px');
+            $('#div_start_btn').css('margin-left', imgdivLeft+'px');
+            $('#div_start_btn').css('margin-top', imgdivTop+'px');
+    </script>
+</body>
+
+</html>
