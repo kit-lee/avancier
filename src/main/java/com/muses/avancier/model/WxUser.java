@@ -75,6 +75,11 @@ public class WxUser {
 	 */
 	private String message;
 	
+	/**
+     * 标签
+     */
+    private String tags;
+	
 	@Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
@@ -158,5 +163,15 @@ public class WxUser {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Column(name = "tags", length = 20)
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 	
+    
 }

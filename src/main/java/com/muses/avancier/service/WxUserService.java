@@ -117,10 +117,17 @@ public class WxUserService {
 		return repository.findAllChecked(activity);
 	}
 	
-	@Transactional
-	public void deleteAll(){
-		repository.deleteAll();
-	}
+	/**
+	 * 分页返回活动所有已审的签到
+	 * @param activityId
+	 * @param pageable
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+    public Page<WxUser> listAll(Long activityId, Pageable pageable){
+        Activity activity = activityRepo.findOne(activityId); 
+        return repository.findAllChecked(activity, pageable);
+    }
 	
 	/**
 	 * 返回所有未审核的微信签到记录
@@ -145,12 +152,15 @@ public class WxUserService {
 	/**
 	 * 审核通过指定的微信签到信息
 	 * @param ids
+	 * @param tags
+	 *         自定义标签
 	 */
 	@Transactional
-	public void checkWxUser(Long[] ids){
+	public void checkWxUser(Long[] ids, String tags){
 	    List<WxUser> wxUsers = repository.findByIdIn(ids);
 	    for(WxUser user : wxUsers){
             user.setChecked(true);
+            user.setTags(tags);
 	    }
 	    repository.save(wxUsers);
 	}

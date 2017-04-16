@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.WriterException;
 import com.muses.avancier.model.Activity;
 import com.muses.avancier.service.ActivityService;
+import com.muses.avancier.service.WxUserService;
 import com.muses.avancier.type.ActivityType;
 import com.muses.avancier.util.QRCodeUtil;
 import com.muses.common.util.DateUtil;
@@ -45,6 +46,9 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+    
+    @Autowired
+    private WxUserService wxUserService;
     
     @Autowired
     private QRCodeUtil qrCodeUtil;
@@ -92,19 +96,18 @@ public class ActivityController {
         JSONArray data = new JSONArray();
         for (int i = 0; i < activities.getContent().size(); i++) {
             Activity activity = activities.getContent().get(i);
-            String[] arr = new String[10];
+            String[] arr = new String[9];
             arr[0] = "";
-            arr[1] = String.valueOf(length * page + i + 1);
-            arr[2] = activity.getName();
-            arr[3] = activity.getStart() != null ? DateUtil.DateToString(
+            arr[1] = activity.getName();
+            arr[2] = activity.getStart() != null ? DateUtil.DateToString(
                     activity.getStart(), "yyyy-MM-dd") : "";
-            arr[4] = activity.getEnd() != null ? DateUtil.DateToString(
+            arr[3] = activity.getEnd() != null ? DateUtil.DateToString(
                     activity.getEnd(), "yyyy-MM-dd") : "";
-            arr[5] = activity.isNeedAudit() ? "是" : "";
-            arr[6] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
-            arr[7] = String.valueOf(activity.getId());
-            arr[8] = activity.getDefOpenId() != null ? activity.getDefOpenId() : "";
-            arr[9] = activity.getDefHeadPic() != null ? activity.getDefHeadPic() : "";
+            arr[4] = activity.isNeedAudit() ? "是" : "";
+            arr[5] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
+            arr[6] = String.valueOf(activity.getId());
+            arr[7] = activity.getDefOpenId() != null ? activity.getDefOpenId() : "";
+            arr[8] = activity.getDefHeadPic() != null ? activity.getDefHeadPic() : "";
 
             data.add(arr);
         }
@@ -113,6 +116,11 @@ public class ActivityController {
         return JSON.toJSONBytes(json);
     }
 
+    /**
+     * 保存或更新一个活动
+     * @param activity
+     * @return
+     */
     @RequestMapping(value = "/activities", method = RequestMethod.PUT)
     @ResponseBody
     public byte[] saveOrUpdateActivity(@ModelAttribute Activity activity) {
@@ -125,6 +133,11 @@ public class ActivityController {
         return "true".getBytes();
     }
 
+    /**
+     * 删除一个或多个活动
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/activities/{ids}", method = RequestMethod.DELETE)
     @ResponseBody
     public byte[] deleteActivity(@PathVariable Long[] ids) {
@@ -137,6 +150,12 @@ public class ActivityController {
         return "true".getBytes();
     }
     
+    /**
+     * 返回指定活动的二维码
+     * @param id
+     * @param request
+     * @param rep
+     */
     @RequestMapping(value="/activities/{id}/qrcode", method=RequestMethod.GET)
     public void frontendLinkQrCode(@PathVariable long id, HttpServletRequest request, HttpServletResponse rep){
         rep.setHeader("Cache-Control", "no-store");
@@ -152,5 +171,16 @@ public class ActivityController {
             log.error(e.getMessage(), e);
             rep.setStatus(500);
         }
+    }
+    
+    /**
+     * 显示活动数据的页面
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata", method = RequestMethod.GET)
+    public ModelAndView activityUserData(@PathVariable long id) {
+        Activity activity = activityService.findActivity(id);
+        return new ModelAndView("activitydata").addObject("activity", activity);
     }
 }

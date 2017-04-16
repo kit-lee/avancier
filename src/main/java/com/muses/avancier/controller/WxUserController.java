@@ -112,9 +112,9 @@ public class WxUserController {
      */
     @RequestMapping(value="/wxrecord/{ids}", params="checked=1", method=RequestMethod.PUT)
     @ResponseBody
-    public byte[] checkedWxUser(@PathVariable Long[] ids){
+    public byte[] checkedWxUser(@PathVariable Long[] ids, @RequestParam(required = false) String tags){
         try{
-            wxUserService.checkWxUser(ids);
+            wxUserService.checkWxUser(ids, tags);
         }catch(Exception ex){
             log.error(ex.getMessage(), ex);
             return "false".getBytes();

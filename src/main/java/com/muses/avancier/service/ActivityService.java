@@ -81,4 +81,15 @@ public class ActivityService {
         
         return activity;
     }
+    
+    /**
+     * 返回一个活动，不判断是否过期
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public Activity findActivity(Long id){
+        Activity activity = activityRepository.findOne(id);
+        return activity;
+    }
 }

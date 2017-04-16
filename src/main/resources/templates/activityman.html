@@ -79,14 +79,13 @@
 		                        <thead>
 		                            <tr>
 		                                <th></th>
-		                                <th>序号</th>
 		                                <th>活动名称</th>
 		                                <th>开始时间</th>
 		                                <th>结束时间</th>
 		                                <th>需审核</th>
 		                                <th>类型</th>
 		                                <th>二维码</th>
-		                                <th></th>
+		                                <th>数据</th>
 		                                <th></th>
 		                            </tr>
 		                        </thead>
@@ -216,20 +215,22 @@ $(document).ready(function(){
             className: 'select-checkbox',
             targets:0,
         },{
-            targets:7,
+            targets:6,
             render: function ( data, type, full, meta ) {
-                return '<a href="javascript:showQrCode('+data+')">查看</a>';
+                return '<a href="javascript:void(0)" onclick="showQrCode('+data+')">查看</a>';
             }
         },{
-        	targets:2,
+        	targets:1,
         	render: function ( data, type, full, meta ) {
-        	      return '<a href="javascript:editRows('+full[7]+')">'+data+'</a>';
+        	      return '<a href="javascript:void(0)" onclick="editRows('+full[7]+')">'+data+'</a>';
         	}
         },{
-            targets:8,
-            visible: false
+            targets:7,
+            render: function ( data, type, full, meta ) {
+                return '<a href="javascript:void(0)" onclick="showDetail('+full[6]+')">查看</a>';
+            }
         },{
-            targets:9,
+            targets:8,
             visible: false
         } ],
         select: {
@@ -275,9 +276,9 @@ $(document).ready(function(){
     	for(var i=0;i<data.length;i++){
     		var d = data[i];
     		if(ids!=='')
-    			  ids+=','+d[7];
+    			  ids+=','+d[6];
     		else
-    			ids+=d[7];
+    			ids+=d[6];
     	}
 
     	$.ajax({
@@ -355,23 +356,23 @@ $(document).ready(function(){
 function editRows(id){
     var data = table.rows().data();
     for(var i=0;i<data.length;i++){
-    	if(id==data[i][7]){
+    	if(id==data[i][6]){
     		$('#activity-form-id').val(id);
-    		$('#activity-form-name').val(data[i][2]);
+    		$('#activity-form-name').val(data[i][1]);
     		
-            $('#activity-form-start').val(data[i][3]);
-            $('#activity-form-end').val(data[i][4]);
-            if(data[i][5]=='')
+            $('#activity-form-start').val(data[i][2]);
+            $('#activity-form-end').val(data[i][3]);
+            if(data[i][4]=='')
                 $('#activity-form-needAudit').prop('checked', false);
             else
             	$('#activity-form-needAudit').prop('checked', true);
-            if(data[i][6]=='签到')
+            if(data[i][5]=='签到')
             	$('#activity-form-type').val('checkin');
             else
             	$('#activity-form-type').val('barrage');
             
-            $('#activity-form-defOpenId').val(data[i][8]);
-            $('#activity-form-defHeadPic').val(data[i][9]);
+            $('#activity-form-defOpenId').val(data[i][7]);
+            $('#activity-form-defHeadPic').val(data[i][8]);
             
             $('#activity-form .form-group').addClass('pmd-textfield-floating-label-completed');
             $('#activity-dialog-edit').modal('show');
@@ -384,6 +385,10 @@ function showQrCode(id){
 	$('#activity-frontend-qrcode').attr('src', './activities/'+id+'/qrcode');
 	$('#activity-frontend-link').text('[[${baseUrl}+@{/frontend}]]?activityId='+id);
 	$('#activity-frontend-modal').modal('show');
+}
+
+function showDetail(id){
+	window.location='./activities/'+id+'/userdata';
 }
 </script>
 </body>
