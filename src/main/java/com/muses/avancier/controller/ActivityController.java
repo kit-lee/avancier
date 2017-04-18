@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.WriterException;
 import com.muses.avancier.model.Activity;
+import com.muses.avancier.model.WxUser;
 import com.muses.avancier.service.ActivityService;
 import com.muses.avancier.service.WxUserService;
 import com.muses.avancier.type.ActivityType;
@@ -182,5 +183,71 @@ public class ActivityController {
     public ModelAndView activityUserData(@PathVariable long id) {
         Activity activity = activityService.findActivity(id);
         return new ModelAndView("activitydata").addObject("activity", activity);
+    }
+    
+    /**
+     * 活动数据页面的datatable数据
+     * @param id
+     * @param draw
+     *          datatable参数，表示第几次刷新，原路返回
+     * @param start
+     *          开始记录
+     * @param length
+     *          长度
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata/json", method = RequestMethod.GET)
+    @ResponseBody
+    public byte[] activityUserJsonData(@PathVariable long id,@RequestParam int draw,
+            @RequestParam int start, @RequestParam int length,
+            HttpServletRequest request) {
+        int page = start / length;
+        Pageable pageable = new PageRequest(page, length, new Sort(
+                Direction.DESC, "id"));
+        String searchValue = request.getParameter("search[value]");
+        
+        Page<WxUser> pages = null;
+        if (searchValue.isEmpty())
+            pages = wxUserService.listAll(id, pageable);
+        else
+            pages = wxUserService.listAll(id, searchValue, pageable);
+        
+        JSONObject json = new JSONObject();
+        json.put("draw", draw);
+        json.put("recordsTotal", pages.getTotalElements());
+        json.put("recordsFiltered", pages.getTotalElements());
+        JSONArray data = new JSONArray();
+        for (int i = 0; i < pages.getContent().size(); i++) {
+            WxUser user = pages.getContent().get(i);
+            String[] arr = new String[6];
+            arr[0] = String.valueOf(user.getId());
+            arr[1] = user.getNickname();
+            arr[2] = user.getHeadpic();
+            arr[3] = user.getCreatetime() != null ? DateUtil.DateToString(
+                    user.getCreatetime(), "yyyy-MM-dd HH:mm:ss") : "";
+            arr[4] = user.getMessage();
+            arr[5] = user.getTags();
+
+            data.add(arr);
+        }
+
+        json.put("data", data);
+        return JSON.toJSONBytes(json);
+    }
+    
+    
+    @RequestMapping(value = "/activities/{id}/userdata", params="action=resend", 
+            method = RequestMethod.POST)
+    @ResponseBody
+    public byte[] resendUserData(@PathVariable long id, @RequestParam Long[] ids, 
+            @RequestParam int interval, @RequestParam int howManyTimes) {
+        Activity activity = activityService.getActivity(id);
+        if(activity==null)
+            return "false".getBytes();
+
+        wxUserService.resendWxUser(ids, interval, howManyTimes);
+        
+        return "true".getBytes();
     }
 }

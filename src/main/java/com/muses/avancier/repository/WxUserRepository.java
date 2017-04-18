@@ -43,6 +43,16 @@ public interface WxUserRepository extends PagingAndSortingRepository<WxUser, Lon
     Page<WxUser> findAllChecked(Activity activity, Pageable pageable);
 	
 	/**
+	 * 按关键字过滤返回已审核的记录
+	 * @param activity
+	 * @param keyword
+	 * @param pageable
+	 * @return
+	 */
+	@Query("select u from WxUser u where u.activity=?1 and checked=1 and (nickname like %?2% or tags like %?2%) order by id desc")  
+    Page<WxUser> findAllChecked(Activity activity, String keyword, Pageable pageable);
+	
+	/**
 	 * 返回未审核的所有记录
 	 * @param pageable
 	 * @return
@@ -64,4 +74,5 @@ public interface WxUserRepository extends PagingAndSortingRepository<WxUser, Lon
      * @return
      */
     long countByActivityAndOpenId(Activity act, String openId);
+    
 }

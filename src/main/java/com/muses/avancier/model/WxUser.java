@@ -25,7 +25,8 @@ import com.alibaba.fastjson.annotation.JSONField;
  */
 @Entity
 @Table(indexes = { 
-        @Index(name="idx_openid", columnList="openId")
+        @Index(name="idx_openid", columnList="openId"),
+        @Index(name="idx_tags", columnList="tags")
         })
 public class WxUser {
 

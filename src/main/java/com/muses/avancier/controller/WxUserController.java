@@ -1,6 +1,8 @@
 package com.muses.avancier.controller;
 
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +133,7 @@ public class WxUserController {
     @ResponseBody
     public byte[] addBlockUser(@PathVariable Long[] ids){
         try{
-        blockUserService.blockUser(ids);
+            blockUserService.blockUser(ids);
         }catch(Exception ex){
             log.error(ex.getMessage(), ex);
             return "false".getBytes();

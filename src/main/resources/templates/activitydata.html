@@ -113,12 +113,14 @@
 					    <input type="hidden" id="activitydata-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
 					    <input type="hidden" id="activitydata-form-ids" name="ids" value="">
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="activitydata-form-seconds" class="control-label">最大间隔妙数</label>
-							<input type="text" class="mat-input form-control" id="activitydata-form-seconds" name="seconds" value="">
+							<label for="activitydata-form-seconds" class="control-label">最大间隔秒数</label>
+							<input type="text" class="mat-input form-control" id="activitydata-form-seconds" name="interval" value="5">
 							<span class="help-block"></span>
 						</div>
 						<div class="form-group pmd-textfield pmd-textfield-floating-label">
-							<label for="activitydata-form-round">重复提交回数</label> <input type="text" class="mat-input form-control" id="activitydata-form-round" name="rounds" value="">
+							<label for="activitydata-form-round">重复提交次数</label> 
+							<input type="text" class="mat-input form-control" id="activitydata-form-round" name="howManyTimes" value="1">
+							<span class="help-block"></span>
 						</div>
 					</form>
 				</div>
@@ -129,6 +131,24 @@
 			</div>
 		</div>
 	</div>
+	
+	<div tabindex="-1" class="modal fade" id="resend-alert-dialog" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>未选择要重发的内容</p>
+                </div>                        
+        </div>
+    </div>
+    
+    <div tabindex="-1" class="modal fade" id="resend-error-dialog" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>重发失败，请检查活动是否已过期</p>
+                </div>                        
+        </div>
+    </div>
 <!-- Modals Ends -->
 
 <!-- Scripts Starts -->
@@ -171,6 +191,9 @@ $(document).ready(function(){
         columnDefs: [ {
             orderable: false,
             className: 'select-checkbox',
+            render: function ( data, type, full, meta ) {
+                return '';
+            },
             targets:0,
         },{
         	targets:2,
@@ -183,11 +206,12 @@ $(document).ready(function(){
             selector: 'td:first-child'
         },
         //order: [ 1, 'asc' ],
+        pageLength: 50,
         bFilter: true,
         bLengthChange: true,
         processing: true,
         serverSide: true,
-        ajax: './activities/[[${activity.id}]]/userdata/json',
+        ajax: './userdata/json',
         pagingType: "simple",
         "paging": true,
         "searching": true,
@@ -210,6 +234,35 @@ $(document).ready(function(){
             "<'row'<'col-sm-12'tr>>" +
             "<'pmd-card-footer' <'pmd-datatable-pagination' l i p>>",
     });
+	
+	$('#activitydata-form-submit').click(function(){
+		var seconds = $('#activitydata-form-seconds').val();
+		var rounds = $('#activitydata-form-round').val();
+		if(!$.isNumeric(seconds) || seconds<0){
+            $('#activitydata-form-seconds').parent('.form-group').addClass('has-error');
+            $('#activitydata-form-seconds').siblings('.help-block').html('请填写最大间隔秒数，大于或等于0');
+            return;
+        }
+		if(!$.isNumeric(rounds) || rounds<=0){
+            $('#activitydata-form-round').parent('.form-group').addClass('has-error');
+            $('#activitydata-form-round').siblings('.help-block').html('请填写重复次数，大于等于1次');
+            return;
+        }
+		
+		var _data = $('#activitydata-form').serialize();
+        $.ajax({
+            url:'./userdata?action=resend',
+            type:'POST',
+            data:_data,
+            dataType:'text',
+            success:function(t){
+                if(t=='false'){
+                    $('#resend-error-dialog').modal('show');
+                }
+                $('#activitydata-dialog').modal('hide');
+            }
+        })
+	})
 })
 </script>
 <script data-th-if="${activity.type} == 'barrage'">
@@ -218,7 +271,20 @@ $(document).ready(function(){
 	$("div.data-table-title").html('<button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >');
 	//提交内容
 	$('#activitydata-btn-resend').click(function(){
-	    $('#activitydata-dialog').modal('show');
+		var data = table.rows('.selected').data();
+        var ids = '';
+        for(var i=0;i<data.length;i++){
+            var d = data[i];
+            if(ids!=='')
+                  ids+=','+d[0];
+            else
+                ids+=d[0];
+        }
+        if(ids!==''){
+        	$('#activitydata-form-ids').val(ids);
+            $('#activitydata-dialog').modal('show');
+        }else
+        	$('#resend-alert-dialog').modal('show');
 	});
 });
 </script>
