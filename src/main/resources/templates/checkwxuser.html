@@ -211,9 +211,11 @@ $(document).ready(function(){
     });
     
     //表格顶部菜单栏
-    $("div.data-table-title").html('<button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
+    $("div.data-table-title").html('<button id="checkwxuser-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button >'+
+    		' <button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
     		' <button id="checkwxuser-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除签到 </button >'+
-    		' <button id="checkwxuser-btn-block" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >');
+    		' <button id="checkwxuser-btn-block" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >'+
+    		' <button id="checkwxuser-btn-refresh" class="btn pmd-btn-fab pmd-btn-flat pmd-ripple-effect btn-default" type="button"><i class="material-icons pmd-sm">refresh</i></button>');
     
     //删除选中
     $('#checkwxuser-btn-delete').click( function () {
@@ -281,6 +283,10 @@ $(document).ready(function(){
             }
         })
     })
+    
+    $('#checkwxuser-btn-refresh').click(function(){
+    	table.draw();
+    })
 
   //添加到黑名单按钮动作
     $('#checkwxuser-btn-block').click(function() {
@@ -305,6 +311,10 @@ $(document).ready(function(){
             }
         })
     });
+    
+    $('#checkwxuser-btn-selectall').click(function(){
+    	table.rows({page:'current'}).select();
+    })
 })
 </script>
 </body>

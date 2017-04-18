@@ -268,7 +268,7 @@ $(document).ready(function(){
 <script data-th-if="${activity.type} == 'barrage'">
 $(document).ready(function(){
 	//表格顶部菜单栏
-	$("div.data-table-title").html('<button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >');
+	$("div.data-table-title").html('<button id="activitydata-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button > <button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >');
 	//提交内容
 	$('#activitydata-btn-resend').click(function(){
 		var data = table.rows('.selected').data();
@@ -286,6 +286,10 @@ $(document).ready(function(){
         }else
         	$('#resend-alert-dialog').modal('show');
 	});
+	
+	$('#activitydata-btn-selectall').click(function(){
+		table.rows({page:'current'}).select();
+	})
 });
 </script>
 </body>

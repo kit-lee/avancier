@@ -39,25 +39,32 @@
 </div>
     <script src="" data-th-src="@{/frontend/js/jquery.min.js}"></script>
     <script>
-        function postuser(open_id, headurl, nickname, message){
-            $.ajax({
-                url : "[[${apiAddress}]]",
-                type:'POST',
-                dataType:"text",
-                data:{
+        function postuser(open_id, headurl, nickname, message, flag){
+        	var params = {
                     'openId' : open_id,
                     'headpic' : headurl,
                     'nickName' : nickname,
                     'message' : message,
                     '_csrf' : '[[${_csrf.token}]]'
-                },
+                }
+        	
+            $.ajax({
+                url : "[[${apiAddress}]]",
+                type:'POST',
+                dataType:"text",
+                data: params,
                 success:function(data){
                     if(data=='true'){
                     	alert('留言已提交');
                     	$('#message').val('');
-                        //window.location.href = "[[@{/frontend/success}]]?activityId=[[${#request.getParameter('activityId')}]]";
-                    }else
+                    }else if(data=='false'){
                         alert('您已经参与过');
+                    }else if(flag!==1){
+                    	//可能是csrf token过期导致的失败
+                    	//若不是重新提交，则将参数放到sessionStorage中，刷新页面自动再提交一次
+                    	sessionStorage.setItem("postparam", JSON.stringify(params));
+                    	window.location.href = "[[@{/frontend/checkin}]]?activityId=[[${#request.getParameter('activityId')}]]";
+                    }
                 }
             })
         }
@@ -118,6 +125,14 @@
                 postuser(userinfo.openid, userinfo.headimgurl, userinfo.nickname, msg);
             });
 
+            //如果sessionStorage中有重发的内容，则自动再次提交
+            var postparam = sessionStorage.getItem('postparam');
+            if(postparam!=null && postparam!=undefined){
+            	var p = JSON.toJSON(postparam);
+            	sessionStorage.removeItem('postparam');
+            	postuser(p.openId, p.headpic, p.nickName, p.message, 1);
+            	
+            }
         })
         
         //捕捉翻转事件
