@@ -236,7 +236,14 @@ public class ActivityController {
         return JSON.toJSONBytes(json);
     }
     
-    
+    /**
+     * 提交重发任务
+     * @param id
+     * @param ids
+     * @param interval
+     * @param howManyTimes
+     * @return
+     */
     @RequestMapping(value = "/activities/{id}/userdata", params="action=resend", 
             method = RequestMethod.POST)
     @ResponseBody
@@ -247,6 +254,24 @@ public class ActivityController {
             return "false".getBytes();
 
         wxUserService.resendWxUser(ids, interval, howManyTimes);
+        
+        return "true".getBytes();
+    }
+    
+    /**
+     * 清除未执行的重发任务
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata", params="action=clearresend", 
+            method = RequestMethod.DELETE)
+    @ResponseBody
+    public byte[] clearResendUserData(@PathVariable long id) {
+        Activity activity = activityService.getActivity(id);
+        if(activity==null)
+            return "false".getBytes();
+
+        wxUserService.clearScheduleTask(id);
         
         return "true".getBytes();
     }

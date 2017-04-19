@@ -132,21 +132,33 @@
 		</div>
 	</div>
 	
-	<div tabindex="-1" class="modal fade" id="resend-alert-dialog" style="display: none;" aria-hidden="true">
+	<div tabindex="-1" class="modal fade" id="resend-alert-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
                     <p>未选择要重发的内容</p>
                 </div>                        
+            </div>
         </div>
     </div>
     
-    <div tabindex="-1" class="modal fade" id="resend-error-dialog" style="display: none;" aria-hidden="true">
+    <div tabindex="-1" class="modal fade" id="resend-error-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
                     <p>重发失败，请检查活动是否已过期</p>
+                </div>    
+            </div>                    
+        </div>
+    </div>
+    
+    <div tabindex="-1" class="modal fade" id="resend-ok-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>已清空重发任务</p>
                 </div>                        
+            </div>
         </div>
     </div>
 <!-- Modals Ends -->
@@ -158,8 +170,8 @@
 <script>
 	$(document).ready(
 			function() {
-				var sPath = window.location.pathname;
-				var sPage = sPath;//sPath.substring(sPath.lastIndexOf('/') + 1);
+				var sPath = "[[@{/activities}]]";
+                var sPage = sPath;
 				$(".pmd-sidebar-nav").each(
 						function() {
 							$(this).find("a[href='" + sPage + "']").parents(".dropdown").addClass("open");
@@ -235,21 +247,31 @@ $(document).ready(function(){
             "<'pmd-card-footer' <'pmd-datatable-pagination' l i p>>",
     });
 	
+	
+})
+</script>
+<script data-th-if="${activity.type} == 'barrage'">
+$(document).ready(function(){
+	//表格顶部菜单栏
+	$("div.data-table-title").html('<button id="activitydata-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button >'+
+			' <button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >'+
+			' <button id="activitydata-btn-clearresend" type="button" class="btn pmd-ripple-effect btn-warning"> 清空重发任务 </button >');
+	
 	$('#activitydata-form-submit').click(function(){
-		var seconds = $('#activitydata-form-seconds').val();
-		var rounds = $('#activitydata-form-round').val();
-		if(!$.isNumeric(seconds) || seconds<0){
+        var seconds = $('#activitydata-form-seconds').val();
+        var rounds = $('#activitydata-form-round').val();
+        if(!$.isNumeric(seconds) || seconds<0){
             $('#activitydata-form-seconds').parent('.form-group').addClass('has-error');
             $('#activitydata-form-seconds').siblings('.help-block').html('请填写最大间隔秒数，大于或等于0');
             return;
         }
-		if(!$.isNumeric(rounds) || rounds<=0){
+        if(!$.isNumeric(rounds) || rounds<=0){
             $('#activitydata-form-round').parent('.form-group').addClass('has-error');
             $('#activitydata-form-round').siblings('.help-block').html('请填写重复次数，大于等于1次');
             return;
         }
-		
-		var _data = $('#activitydata-form').serialize();
+        
+        var _data = $('#activitydata-form').serialize();
         $.ajax({
             url:'./userdata?action=resend',
             type:'POST',
@@ -259,16 +281,12 @@ $(document).ready(function(){
                 if(t=='false'){
                     $('#resend-error-dialog').modal('show');
                 }
+                table.draw();
                 $('#activitydata-dialog').modal('hide');
             }
         })
-	})
-})
-</script>
-<script data-th-if="${activity.type} == 'barrage'">
-$(document).ready(function(){
-	//表格顶部菜单栏
-	$("div.data-table-title").html('<button id="activitydata-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button > <button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >');
+    })
+    
 	//提交内容
 	$('#activitydata-btn-resend').click(function(){
 		var data = table.rows('.selected').data();
@@ -289,6 +307,17 @@ $(document).ready(function(){
 	
 	$('#activitydata-btn-selectall').click(function(){
 		table.rows({page:'current'}).select();
+	});
+	
+	$('#activitydata-btn-clearresend').click(function(){
+		$.ajax({
+            url:'./userdata?action=clearresend&_csrf=[[${_csrf.token}]]',
+            type:'DELETE',
+            dataType:'text',
+            success:function(){
+                $('#resend-ok-dialog').modal('show');
+            }
+        })
 	})
 });
 </script>

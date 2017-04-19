@@ -14,13 +14,16 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.muses.avancier.model.Activity;
 import com.muses.avancier.model.WxUser;
+import com.muses.avancier.model.WxUserResend;
 import com.muses.avancier.repository.ActivityRepository;
 import com.muses.avancier.repository.WxUserRepository;
+import com.muses.avancier.repository.WxUserResendRepository;
 import com.muses.avancier.type.ActivityType;
 import com.muses.common.util.NumberUtil;
 
@@ -42,6 +45,9 @@ public class WxUserService {
 	
 	@Autowired
     private CacheManager cacheManager;
+	
+	@Autowired
+	private WxUserResendRepository wxUserResendRepository;
 
 	/**
 	 * 保存一个微信签到/弹幕信息
@@ -198,38 +204,84 @@ public class WxUserService {
 	public void resendWxUser(Long[] ids, int interval, int howManyTimes){
 	    logger.debug("异步重发任务进入，间隔秒数="+interval+", 重发 "+howManyTimes+" 回");
 	    List<WxUser> wxUsers = repository.findByIdIn(ids);
+	    List<WxUserResend> resends = new ArrayList<>(); 
 	    for(int i=0;i<howManyTimes;i++){
-	        logger.debug("第"+(i+1)+"回");
     	    for(WxUser user : wxUsers){
     	        if(ActivityType.checkin.name().equals(user.getActivity().getType()))
     	            break;
     	        if(!user.isChecked())
     	            break;
     	        
-    	        if(interval>0){
-    	        int sleepSeconds = NumberUtil.getRandomNumber(interval) * 1000;
-        	        logger.debug("睡眠 "+sleepSeconds+" 毫秒");
-        	        if(sleepSeconds>0)
-                        try {
-                            Thread.sleep(sleepSeconds);
-                        } catch (InterruptedException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-    	        }
+    	        int delaySeconds = NumberUtil.getRandomNumber(interval);
+    	        if(delaySeconds==0)
+    	            delaySeconds=1;
     	        
-                WxUser resendUser = new WxUser();
-                resendUser.setActivity(user.getActivity());
-                resendUser.setChecked(true);
-                resendUser.setCreatetime(new Date());
-                resendUser.setHeadpic(user.getHeadpic());
-                resendUser.setMessage(user.getMessage());
-                resendUser.setNickname(user.getNickname());
-                resendUser.setOpenId(user.getOpenId());
-                resendUser.setTrans(false);
-                logger.debug("["+resendUser.getNickname()+"]:"+resendUser.getMessage());
-                repository.save(resendUser);
-            }
+    	        WxUserResend resend = new WxUserResend();
+    	        resend.setActivity(user.getActivity());
+    	        resend.setHeadpic(user.getHeadpic());
+    	        resend.setMessage(user.getMessage());
+    	        resend.setNickname(user.getNickname());
+    	        resend.setOpenId(user.getOpenId());
+    	        resend.setResended(false);
+    	        resend.setDelay(delaySeconds);
+    	        
+    	        resends.add(resend);
+    	    }
 	    }
+	    logger.debug("总共"+resends.size()+"条任务");
+	    
+	    wxUserResendRepository.save(resends);
+
 	}
 	
+	/**
+	 * 清除未执行的重发任务
+	 * @param activityId
+	 */
+	@Transactional
+	public void clearScheduleTask(Long activityId){
+	    Activity activity = activityRepo.findOne(activityId);
+	    wxUserResendRepository.deleteByActivityAndResendedFalse(activity);
+	}
+	
+	/**
+	 * 每秒检查并执行重发任务
+	 */
+	@Scheduled(fixedRate=1000)
+	protected void resendScheduleTask() {
+	    WxUserResend resend = wxUserResendRepository.findTopByResendedFalseOrderByIdAsc();
+	    if(resend==null)
+	        return;
+
+	    resend.setResended(true);
+	    wxUserResendRepository.save(resend);
+	    
+	    if(resend.getDelay()>1)
+            try {
+                Thread.sleep((resend.getDelay()-1) * 1000);
+            } catch (InterruptedException e) {
+                logger.warn(e.getMessage(), e);
+            }
+	    
+	    WxUser resendUser = new WxUser();
+        resendUser.setActivity(resend.getActivity());
+        resendUser.setChecked(true);
+        resendUser.setCreatetime(new Date());
+        resendUser.setHeadpic(resend.getHeadpic());
+        resendUser.setMessage(resend.getMessage());
+        resendUser.setNickname(resend.getNickname());
+        resendUser.setOpenId(resend.getOpenId());
+        resendUser.setTrans(false);
+        logger.debug("重发活动["+resendUser.getActivity().getName()+"]弹幕, ["+resendUser.getNickname()+"]:"+resendUser.getMessage());
+        //repository.save(resendUser);
+	}
+	
+	/**
+	 * 每天清理已重发过的任务
+	 */
+	@Scheduled(cron="0 0 12 * * ?")
+	protected void cleanFinishResendTask(){
+	    logger.info("执行计划任务，清理已执行的重发任务");
+	    wxUserResendRepository.deleteByResendedTrue();
+	}
 }
