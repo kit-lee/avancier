@@ -114,7 +114,17 @@
         	}
             
             $('#postme').click(function(){
-                var msg = $('#message').val();
+            	 var msg = $('#message').val();
+                 $('#message').val('');
+                 
+                 //去emoji表情
+                 var regRule = /\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g;
+                 if(msg.match(regRule)) {
+                     msg = msg.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, "");
+                 }
+                 if(msg=='')
+                     return;
+                 
                 postuser(userinfo.openid, userinfo.headimgurl, userinfo.nickname, msg);
             });
 

@@ -1,6 +1,8 @@
 package com.muses.avancier.controller;
 
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,9 +114,9 @@ public class WxUserController {
      */
     @RequestMapping(value="/wxrecord/{ids}", params="checked=1", method=RequestMethod.PUT)
     @ResponseBody
-    public byte[] checkedWxUser(@PathVariable Long[] ids){
+    public byte[] checkedWxUser(@PathVariable Long[] ids, @RequestParam(required = false) String tags){
         try{
-            wxUserService.checkWxUser(ids);
+            wxUserService.checkWxUser(ids, tags);
         }catch(Exception ex){
             log.error(ex.getMessage(), ex);
             return "false".getBytes();
@@ -131,7 +133,7 @@ public class WxUserController {
     @ResponseBody
     public byte[] addBlockUser(@PathVariable Long[] ids){
         try{
-        blockUserService.blockUser(ids);
+            blockUserService.blockUser(ids);
         }catch(Exception ex){
             log.error(ex.getMessage(), ex);
             return "false".getBytes();

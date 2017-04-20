@@ -20,6 +20,7 @@ import com.muses.avancier.model.Activity;
 import com.muses.avancier.model.WxUser;
 import com.muses.avancier.service.ActivityService;
 import com.muses.avancier.service.WxUserService;
+import com.muses.avancier.type.ActivityType;
 
 /**
  * 前端程序调用的REST API
@@ -66,8 +67,16 @@ public class ApiController {
 		
 		Activity activity = activityService.getActivity(activityId);
 		if(activity==null){
+		    logger.info("找不到活动ID"+activityId+"的记录，或已过期");
 		    return "false".getBytes();
 		}
+		
+		if(ActivityType.barrage.name().equals(activity.getType()) &&
+		        message.trim().isEmpty()){
+		    logger.warn("提交空弹幕，不执行保存");
+		    return "true".getBytes();
+		}
+		    
 		
 		WxUser user = new WxUser();
 		user.setActivity(activity);

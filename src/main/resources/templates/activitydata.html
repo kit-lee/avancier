@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="妙思科技微信上墙应用">
+<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport">
+
+<title>活动数据 - 妙思科技微信上墙应用</title>
+<link rel="shortcut icon" type="image/x-icon" href="themes/images/favicon.ico">
+
+<!-- Google icon -->
+<link href="" rel="stylesheet" data-th-href="@{https://fonts.googleapis.com/icon?family=Material+Icons}" />
+
+<!-- Bootstrap css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/bootstrap.min.css}" />
+<!-- Propeller css -->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/assets/css/propeller.min.css}" />
+
+<!-- DataTables css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/responsive/2.1.0/css/responsive.bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css}">
+<!-- Propeller dataTables css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/components/data-table/css/pmd-datatable.css}">
+
+<!-- Propeller theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-theme.css}" />
+
+<!-- Propeller admin theme css-->
+<link rel="stylesheet" type="text/css" href="" data-th-href="@{/themes/css/propeller-admin.css}" />
+</head>
+
+<!-- Styles Ends -->
+
+<body>
+<!-- Header Starts -->
+<!--Start Nav bar -->
+<nav data-th-replace="index :: navbar">
+</nav><!--End Nav bar -->
+<!-- Header Ends -->
+
+<!-- Sidebar Starts -->
+<div class="pmd-sidebar-overlay"></div>
+
+<!-- Left sidebar -->
+<aside data-th-replace="index :: sidebar">
+</aside><!-- End Left sidebar -->
+<!-- Sidebar Ends -->  
+	
+<!--content area start-->
+<div id="content" class="pmd-content inner-page">
+
+	<div class="container-fluid full-width-container data-tables">
+		<!-- Title -->
+        <h1 class="section-title" id="services">
+            <span>活动数据</span>
+        </h1><!-- End Title -->
+        
+        <!--breadcrum start-->
+        <ol class="breadcrumb text-left">
+          <li><a href="" data-th-href="@{/}">首页</a></li>
+          <li><a href="" data-th-href="@{/activities}">活动管理</a></li>
+          <li class="active">活动数据</li>
+        </ol><!--breadcrum end-->
+        
+        <!-- table card -->
+        <section class="row component-section">
+            <!-- table card code and example -->
+            <div class="col-md-12">
+                <div class="component-box">
+                    <!-- table card example -->
+                    <div  class="pmd-card pmd-z-depth pmd-card-custom-view">
+                        <div class="table-responsive">
+                            <table id="activitydata-table" class="table pmd-table table-hover table-striped display responsive nowrap" cellspacing="0" width="100%">
+		                        <thead>
+		                            <tr>
+		                                <th></th>
+                                        <th>微信用户</th>
+                                        <th>头像</th>
+                                        <th>签到时间</th>
+                                        <th>留言</th>
+                                        <th>标签</th>
+		                            </tr>
+		                        </thead>
+		                    </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div><!--end content area-->
+
+<!-- Footer Starts -->
+<!--footer start-->
+<footer data-th-replace="index :: footer">
+</footer>
+<!--footer end-->
+<!-- Footer Ends -->
+
+<!-- Modals start -->
+	<div tabindex="-1" class="modal fade" id="activitydata-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bordered">
+					<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+					<h2 class="pmd-card-title-text">重发机制</h2>
+				</div>
+				<div class="modal-body">
+					<form id="activitydata-form" class="form-horizontal">
+					    <input type="hidden" id="activitydata-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
+					    <input type="hidden" id="activitydata-form-ids" name="ids" value="">
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="activitydata-form-seconds" class="control-label">最大间隔秒数</label>
+							<input type="text" class="mat-input form-control" id="activitydata-form-seconds" name="interval" value="5">
+							<span class="help-block"></span>
+						</div>
+						<div class="form-group pmd-textfield pmd-textfield-floating-label">
+							<label for="activitydata-form-round">重复提交次数</label> 
+							<input type="text" class="mat-input form-control" id="activitydata-form-round" name="howManyTimes" value="1">
+							<span class="help-block"></span>
+						</div>
+					</form>
+				</div>
+				<div class="pmd-modal-action">
+					<button id="activitydata-form-submit" class="btn pmd-ripple-effect btn-primary" type="button">提交重发</button>
+					<button data-dismiss="modal" class="btn pmd-ripple-effect btn-default" type="button">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div tabindex="-1" class="modal fade" id="resend-alert-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>未选择要重发的内容</p>
+                </div>                        
+            </div>
+        </div>
+    </div>
+    
+    <div tabindex="-1" class="modal fade" id="resend-error-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>重发失败，请检查活动是否已过期</p>
+                </div>    
+            </div>                    
+        </div>
+    </div>
+    
+    <div tabindex="-1" class="modal fade" id="resend-ok-dialog" style="display: none;" aria-hidden="true" data-th-if="${activity.type} == 'barrage'">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>已清空重发任务</p>
+                </div>                        
+            </div>
+        </div>
+    </div>
+<!-- Modals Ends -->
+
+<!-- Scripts Starts -->
+<script src="" data-th-src="@{/assets/js/jquery-1.12.2.min.js}"></script>
+<script src="" data-th-src="@{/assets/js/bootstrap.min.js}"></script>
+<script src="" data-th-src="@{/assets/js/propeller.min.js}"></script>
+<script>
+	$(document).ready(
+			function() {
+				var sPath = "[[@{/activities}]]";
+                var sPage = sPath;
+				$(".pmd-sidebar-nav").each(
+						function() {
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").addClass("open");
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").find('.dropdown-menu').css("display", "block");
+							$(this).find("a[href='" + sPage + "']").parents(".dropdown").find('a.dropdown-toggle').addClass("active");
+							$(this).find("a[href='" + sPage + "']").addClass("active");
+						});
+			});
+	
+</script>
+
+<!-- Datatable js -->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js}"></script>
+
+<!-- Datatable Bootstrap -->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js}"></script>
+
+<!-- Datatable responsive js-->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js}"></script>
+
+<!-- Datatable select js-->
+<script type="text/javascript" language="javascript" src="" data-th-src="@{https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js}"></script>
+<script>
+var table;
+$(document).ready(function(){
+	//数据表格初始化
+	table = $('#activitydata-table').DataTable({
+        responsive: false,
+        columnDefs: [ {
+            orderable: false,
+            className: 'select-checkbox',
+            render: function ( data, type, full, meta ) {
+                return '';
+            },
+            targets:0,
+        },{
+        	targets:2,
+            render: function ( data, type, full, meta ) {
+                  return '<img src="'+data+'" style="width:60px" />';
+            }
+        }],
+        select: {
+            style: 'multi',
+            selector: 'td:first-child'
+        },
+        //order: [ 1, 'asc' ],
+        pageLength: 50,
+        bFilter: true,
+        bLengthChange: true,
+        processing: true,
+        serverSide: true,
+        ajax: './userdata/json',
+        pagingType: "simple",
+        "paging": true,
+        "searching": true,
+        "language": {
+        	"sProcessing":"处理中...",
+        	"sLoadingRecords": "载入中...",
+        	"sZeroRecords":  "没有匹配结果",
+        	"emptyTable":"未有任何数据",
+        	"sInfo":"显示第 _START_ 至 _END_ 项记录，共 _TOTAL_ 项",
+            "sLengthMenu": "<span class='custom-select-title'>每页显示:</span> <span class='custom-select'> _MENU_ </span> 项记录",
+            "sSearch": "",
+            "sSearchPlaceholder": "昵称或标签查找",
+            "paginate": {
+                "sNext": " ",
+                "sPrevious": " "
+            },
+        },
+        dom:
+            "<'pmd-card-title'<'data-table-title'><'search-paper pmd-textfield'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'pmd-card-footer' <'pmd-datatable-pagination' l i p>>",
+    });
+	
+	
+})
+</script>
+<script data-th-if="${activity.type} == 'barrage'">
+$(document).ready(function(){
+	//表格顶部菜单栏
+	$("div.data-table-title").html('<button id="activitydata-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button >'+
+			' <button id="activitydata-btn-resend" type="button" class="btn pmd-ripple-effect btn-primary"> 重发弹幕 </button >'+
+			' <button id="activitydata-btn-clearresend" type="button" class="btn pmd-ripple-effect btn-warning"> 清空重发任务 </button >');
+	
+	$('#activitydata-form-submit').click(function(){
+        var seconds = $('#activitydata-form-seconds').val();
+        var rounds = $('#activitydata-form-round').val();
+        if(!$.isNumeric(seconds) || seconds<0){
+            $('#activitydata-form-seconds').parent('.form-group').addClass('has-error');
+            $('#activitydata-form-seconds').siblings('.help-block').html('请填写最大间隔秒数，大于或等于0');
+            return;
+        }
+        if(!$.isNumeric(rounds) || rounds<=0){
+            $('#activitydata-form-round').parent('.form-group').addClass('has-error');
+            $('#activitydata-form-round').siblings('.help-block').html('请填写重复次数，大于等于1次');
+            return;
+        }
+        
+        var _data = $('#activitydata-form').serialize();
+        $.ajax({
+            url:'./userdata?action=resend',
+            type:'POST',
+            data:_data,
+            dataType:'text',
+            success:function(t){
+                if(t=='false'){
+                    $('#resend-error-dialog').modal('show');
+                }
+                table.draw();
+                $('#activitydata-dialog').modal('hide');
+            }
+        })
+    })
+    
+	//提交内容
+	$('#activitydata-btn-resend').click(function(){
+		var data = table.rows('.selected').data();
+        var ids = '';
+        for(var i=0;i<data.length;i++){
+            var d = data[i];
+            if(ids!=='')
+                  ids+=','+d[0];
+            else
+                ids+=d[0];
+        }
+        if(ids!==''){
+        	$('#activitydata-form-ids').val(ids);
+            $('#activitydata-dialog').modal('show');
+        }else
+        	$('#resend-alert-dialog').modal('show');
+	});
+	
+	$('#activitydata-btn-selectall').click(function(){
+		table.rows({page:'current'}).select();
+	});
+	
+	$('#activitydata-btn-clearresend').click(function(){
+		$.ajax({
+            url:'./userdata?action=clearresend&_csrf=[[${_csrf.token}]]',
+            type:'DELETE',
+            dataType:'text',
+            success:function(){
+                $('#resend-ok-dialog').modal('show');
+            }
+        })
+	})
+});
+</script>
+</body>
+</html>

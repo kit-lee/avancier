@@ -27,7 +27,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.WriterException;
 import com.muses.avancier.model.Activity;
+import com.muses.avancier.model.WxUser;
 import com.muses.avancier.service.ActivityService;
+import com.muses.avancier.service.WxUserService;
 import com.muses.avancier.type.ActivityType;
 import com.muses.avancier.util.QRCodeUtil;
 import com.muses.common.util.DateUtil;
@@ -45,6 +47,9 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+    
+    @Autowired
+    private WxUserService wxUserService;
     
     @Autowired
     private QRCodeUtil qrCodeUtil;
@@ -92,19 +97,18 @@ public class ActivityController {
         JSONArray data = new JSONArray();
         for (int i = 0; i < activities.getContent().size(); i++) {
             Activity activity = activities.getContent().get(i);
-            String[] arr = new String[10];
+            String[] arr = new String[9];
             arr[0] = "";
-            arr[1] = String.valueOf(length * page + i + 1);
-            arr[2] = activity.getName();
-            arr[3] = activity.getStart() != null ? DateUtil.DateToString(
+            arr[1] = activity.getName();
+            arr[2] = activity.getStart() != null ? DateUtil.DateToString(
                     activity.getStart(), "yyyy-MM-dd") : "";
-            arr[4] = activity.getEnd() != null ? DateUtil.DateToString(
+            arr[3] = activity.getEnd() != null ? DateUtil.DateToString(
                     activity.getEnd(), "yyyy-MM-dd") : "";
-            arr[5] = activity.isNeedAudit() ? "是" : "";
-            arr[6] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
-            arr[7] = String.valueOf(activity.getId());
-            arr[8] = activity.getDefOpenId() != null ? activity.getDefOpenId() : "";
-            arr[9] = activity.getDefHeadPic() != null ? activity.getDefHeadPic() : "";
+            arr[4] = activity.isNeedAudit() ? "是" : "";
+            arr[5] = ActivityType.barrage.name().equals(activity.getType()) ? "弹幕" : "签到";
+            arr[6] = String.valueOf(activity.getId());
+            arr[7] = activity.getDefOpenId() != null ? activity.getDefOpenId() : "";
+            arr[8] = activity.getDefHeadPic() != null ? activity.getDefHeadPic() : "";
 
             data.add(arr);
         }
@@ -113,6 +117,11 @@ public class ActivityController {
         return JSON.toJSONBytes(json);
     }
 
+    /**
+     * 保存或更新一个活动
+     * @param activity
+     * @return
+     */
     @RequestMapping(value = "/activities", method = RequestMethod.PUT)
     @ResponseBody
     public byte[] saveOrUpdateActivity(@ModelAttribute Activity activity) {
@@ -125,6 +134,11 @@ public class ActivityController {
         return "true".getBytes();
     }
 
+    /**
+     * 删除一个或多个活动
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/activities/{ids}", method = RequestMethod.DELETE)
     @ResponseBody
     public byte[] deleteActivity(@PathVariable Long[] ids) {
@@ -137,6 +151,12 @@ public class ActivityController {
         return "true".getBytes();
     }
     
+    /**
+     * 返回指定活动的二维码
+     * @param id
+     * @param request
+     * @param rep
+     */
     @RequestMapping(value="/activities/{id}/qrcode", method=RequestMethod.GET)
     public void frontendLinkQrCode(@PathVariable long id, HttpServletRequest request, HttpServletResponse rep){
         rep.setHeader("Cache-Control", "no-store");
@@ -152,5 +172,107 @@ public class ActivityController {
             log.error(e.getMessage(), e);
             rep.setStatus(500);
         }
+    }
+    
+    /**
+     * 显示活动数据的页面
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata", method = RequestMethod.GET)
+    public ModelAndView activityUserData(@PathVariable long id) {
+        Activity activity = activityService.findActivity(id);
+        return new ModelAndView("activitydata").addObject("activity", activity);
+    }
+    
+    /**
+     * 活动数据页面的datatable数据
+     * @param id
+     * @param draw
+     *          datatable参数，表示第几次刷新，原路返回
+     * @param start
+     *          开始记录
+     * @param length
+     *          长度
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata/json", method = RequestMethod.GET)
+    @ResponseBody
+    public byte[] activityUserJsonData(@PathVariable long id,@RequestParam int draw,
+            @RequestParam int start, @RequestParam int length,
+            HttpServletRequest request) {
+        int page = start / length;
+        Pageable pageable = new PageRequest(page, length, new Sort(
+                Direction.DESC, "id"));
+        String searchValue = request.getParameter("search[value]");
+        
+        Page<WxUser> pages = null;
+        if (searchValue.isEmpty())
+            pages = wxUserService.listAll(id, pageable);
+        else
+            pages = wxUserService.listAll(id, searchValue, pageable);
+        
+        JSONObject json = new JSONObject();
+        json.put("draw", draw);
+        json.put("recordsTotal", pages.getTotalElements());
+        json.put("recordsFiltered", pages.getTotalElements());
+        JSONArray data = new JSONArray();
+        for (int i = 0; i < pages.getContent().size(); i++) {
+            WxUser user = pages.getContent().get(i);
+            String[] arr = new String[6];
+            arr[0] = String.valueOf(user.getId());
+            arr[1] = user.getNickname();
+            arr[2] = user.getHeadpic();
+            arr[3] = user.getCreatetime() != null ? DateUtil.DateToString(
+                    user.getCreatetime(), "yyyy-MM-dd HH:mm:ss") : "";
+            arr[4] = user.getMessage();
+            arr[5] = user.getTags();
+
+            data.add(arr);
+        }
+
+        json.put("data", data);
+        return JSON.toJSONBytes(json);
+    }
+    
+    /**
+     * 提交重发任务
+     * @param id
+     * @param ids
+     * @param interval
+     * @param howManyTimes
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata", params="action=resend", 
+            method = RequestMethod.POST)
+    @ResponseBody
+    public byte[] resendUserData(@PathVariable long id, @RequestParam Long[] ids, 
+            @RequestParam int interval, @RequestParam int howManyTimes) {
+        Activity activity = activityService.getActivity(id);
+        if(activity==null)
+            return "false".getBytes();
+
+        wxUserService.resendWxUser(ids, interval, howManyTimes);
+        
+        return "true".getBytes();
+    }
+    
+    /**
+     * 清除未执行的重发任务
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/activities/{id}/userdata", params="action=clearresend", 
+            method = RequestMethod.DELETE)
+    @ResponseBody
+    public byte[] clearResendUserData(@PathVariable long id) {
+        Activity activity = activityService.getActivity(id);
+        if(activity==null)
+            return "false".getBytes();
+
+        wxUserService.clearScheduleTask(id);
+        
+        return "true".getBytes();
     }
 }

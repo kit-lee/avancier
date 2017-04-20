@@ -2,8 +2,6 @@ package com.muses.avancier.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,22 +11,17 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**
- * 签到微信用户
+ * 弹幕类型活动的弹幕重发任务
  * @author kit@muses.cc
  *
  */
 @Entity
-@Table(indexes = { 
-        @Index(name="idx_openid", columnList="openId"),
-        @Index(name="idx_tags", columnList="tags")
-        })
-public class WxUser {
+@Table(name="wxUserResend")
+public class WxUserResend {
 
     /**
      * 自增长主键
@@ -57,29 +50,20 @@ public class WxUser {
     private String nickname;
 	
 	/**
-	 * 创建时间
-	 */
-	private Date createtime;
-	
-	/**
-	 * 是否已传输到上墙程序
-	 */
-	private boolean trans;
-	
-	/**
-	 * 是否已审核
-	 */
-	private boolean checked;
-	
-	/**
 	 * 留言内容
 	 */
 	private String message;
 	
 	/**
-     * 标签
-     */
-    private String tags;
+	 * 延迟的秒数
+	 */
+	private int delay;
+	
+	/**
+	 * 是否已重发
+	 */
+	private boolean resended;
+
 	
 	@Id
     @GeneratedValue(strategy = IDENTITY)
@@ -129,33 +113,6 @@ public class WxUser {
         this.nickname = nickname;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createtime", nullable = false, length = 19)
-	public Date getCreatetime() {
-		return createtime;
-	}
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
-	
-	@Column(name = "trans", nullable = false)
-	public boolean isTrans() {
-		return trans;
-	}
-	
-	public void setTrans(boolean trans) {
-		this.trans = trans;
-	}
-
-	@Column(name = "checked", nullable = false)
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
-
     @Column(name = "message", length = 200)
     public String getMessage() {
         return message;
@@ -165,14 +122,22 @@ public class WxUser {
         this.message = message;
     }
 
-    @Column(name = "tags", length = 20)
-    public String getTags() {
-        return tags;
+    @Column(name = "delay")
+    public int getDelay() {
+        return delay;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
-	
-    
+
+    @Column(name = "resended", nullable = false)
+    public boolean isResended() {
+        return resended;
+    }
+
+    public void setResended(boolean resended) {
+        this.resended = resended;
+    }
+
 }

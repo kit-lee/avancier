@@ -101,6 +101,34 @@
 <!--footer end-->
 <!-- Footer Ends -->
 
+<!-- Modals start -->
+    <div tabindex="-1" class="modal fade" id="tags-dialog" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bordered">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h2 class="pmd-card-title-text">审核通过</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="tags-form" class="form-horizontal">
+                        <input type="hidden" id="tags-form-csrf" name="_csrf" value="" data-th-value="${_csrf.token}">
+                        <input type="hidden" id="tags-form-ids" name="ids" value="">
+                        <div class="form-group pmd-textfield pmd-textfield-floating-label">
+                            <label for="tags-form-tags" class="control-label">自定义标签</label>
+                            <input type="text" class="mat-input form-control" id="tags-form-tags" name="tags" value="">
+                            <span class="help-block">多个标签请用半角逗号分隔</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="pmd-modal-action">
+                    <button id="tags-form-submit" class="btn pmd-ripple-effect btn-primary" type="button">确定</button>
+                    <button data-dismiss="modal" class="btn pmd-ripple-effect btn-default" type="button">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Modals Ends -->
+
 <!-- Scripts Starts -->
 <script src="" data-th-src="@{/assets/js/jquery-1.12.2.min.js}"></script>
 <script src="" data-th-src="@{/assets/js/bootstrap.min.js}"></script>
@@ -183,9 +211,11 @@ $(document).ready(function(){
     });
     
     //表格顶部菜单栏
-    $("div.data-table-title").html('<button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
+    $("div.data-table-title").html('<button id="checkwxuser-btn-selectall" type="button" class="btn pmd-ripple-effect btn-primary"> 全选 </button >'+
+    		' <button id="checkwxuser-btn-check" type="button" class="btn pmd-ripple-effect btn-primary"> 审核通过 </button >'+
     		' <button id="checkwxuser-btn-delete" type="button" class="btn pmd-ripple-effect btn-danger"> 删除签到 </button >'+
-    		' <button id="checkwxuser-btn-block" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >');
+    		' <button id="checkwxuser-btn-block" type="button" class="btn pmd-ripple-effect btn-danger"> <i class="material-icons md-light" style="font-size: 12px;" >block</i> 屏蔽用户 </button >'+
+    		' <button id="checkwxuser-btn-refresh" class="btn pmd-btn-fab pmd-btn-flat pmd-ripple-effect btn-default" type="button"><i class="material-icons pmd-sm">refresh</i></button>');
     
     //删除选中
     $('#checkwxuser-btn-delete').click( function () {
@@ -194,7 +224,7 @@ $(document).ready(function(){
     	for(var i=0;i<data.length;i++){
     		var d = data[i];
     		if(ids!=='')
-    			  ids+=','+d[1];
+    			ids+=','+d[1];
     		else
     			ids+=d[1];
     	}
@@ -221,8 +251,12 @@ $(document).ready(function(){
             else
                 ids+=d[1];
         }
+        
+        $('#tags-form-tags').val('');
+        $('#tags-form-ids').val(ids);
+        $('#tags-dialog').modal('show');
 
-        $.ajax({
+        /*$.ajax({
             url:'./wxrecord/'+ids+'?checked=1&_csrf='+$('#checkwxuser-csrf').val(),
             type:'PUT',
             dataType:'text',
@@ -231,8 +265,28 @@ $(document).ready(function(){
                     table.draw();
                 }
             }
-        })
+        })*/
     });
+    
+    $('#tags-form-submit').click(function(){
+    	var ids = $('#tags-form-ids').val();
+    	var tags = $('#tags-form-tags').val();
+    	$.ajax({
+            url:'./wxrecord/'+ids+'?checked=1&tags='+tags+'&_csrf='+$('#checkwxuser-csrf').val(),
+            type:'PUT',
+            dataType:'text',
+            success:function(t){
+                if(t=='true'){
+                    table.draw();
+                }
+                $('#tags-dialog').modal('hide');
+            }
+        })
+    })
+    
+    $('#checkwxuser-btn-refresh').click(function(){
+    	table.draw();
+    })
 
   //添加到黑名单按钮动作
     $('#checkwxuser-btn-block').click(function() {
@@ -257,6 +311,10 @@ $(document).ready(function(){
             }
         })
     });
+    
+    $('#checkwxuser-btn-selectall').click(function(){
+    	table.rows({page:'current'}).select();
+    })
 })
 </script>
 </body>
